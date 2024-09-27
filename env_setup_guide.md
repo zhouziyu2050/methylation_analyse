@@ -5,12 +5,11 @@ docker pull docker.anyhub.us.kg/continuumio/anaconda3
 
 ## 创建容器
 docker run -itd \
-  -p 58886:58886 \
   -p 22224:22 \
   --name methylationv0.4 \
   -v ~/methylation:/methylation \
-  --memory=120g \
   --cpus=62 \
+  --memory=120g \
   --memory-swap=120g \
   --oom-kill-disable \
   methylation:v0.4
@@ -19,18 +18,15 @@ docker run -itd \
 ## 进入容器
 docker exec -it methylationv0.3 /bin/bash
 
-## 后台启动jupyter，并丢弃日志文件
-# nohup jupyter lab --allow-root --ip 0.0.0.0 --port 58888 >/dev/null 2>&1 &
-## 查看token
-# jupyter server list
-
 ## 退出容器
 exit
 
 ## 进入甲基化分析数据目录
 cd /methylation/F24A080000424_MUSekgzH_20240805100100/
 ```
+
 ## conda换源
+
 ```
 conda config --set show_channel_urls yes
 vim ~/.condarc
@@ -46,31 +42,14 @@ channels:
 show_channel_urls: true
 channel_priority: disabled
 ```
+
 ## conda操作
+
 ```
 # 创建环境
 conda create -n methylathion python==3.10.14
 ```
-## bashrc修改
-```
-PS1="\u@\h:\W\$ "
-conda activate methylation
-cd /methylation
-export PATH="/methylation/utils:$PATH"
 
-# Check if the SSH service is running
-if ! pgrep -x "sshd" > /dev/null
-then
-    service ssh start
-fi
-```
-## locals优化
-```
-locale  # 查看当前设置的locale变量
-locale -a  # 查看当前已安装的locale，发现设置的en_US.UTF-8未安装
-apt-get install locales  # 安装locales
-dpkg-reconfigure locales  # 选择安装en_US.UTF-8
-```
 ## 依赖安装
 ```
 conda install shuaizhou::soapnuke==2.1.9  # 安装后调用名称为SOAPnuke
@@ -110,8 +89,8 @@ conda install conda-forge::r-devtools
 install.packages("BiocManager")
 BiocManager::install("org.Mm.eg.db") # 小鼠基因注释数据库
 install.packages("circlize")  # 绘制Circos图
-# 绘制基因转录本位置
-devtools::install_github("junjunlab/transPlotR")
+devtools::install_github("junjunlab/transPlotR") # 绘制基因转录本位置
+install.packages("dplyr") # 数据处理
 
 # 在jupyter notebook中使用R语言
 install.packages('IRkernel')  # 安装IRkernel
@@ -120,27 +99,9 @@ IRkernel::installspec(user = FALSE)  # 在jupyter notebook中安装
 # python依赖安装
 pip install jupyter pandas matplotlib seaborn
 
-# C语言脚本编译
+# C语言脚本编译依赖
 apt-get install gcc zlib1g-dev
 apt-get install g++ libjsoncpp-dev
-
-# install.packages("dplyr")
-```
-## Homer使用
-在http://homer.ucsd.edu/homer/download.html下载configureHomer.pl文件，用于homer及其数据集的下载、安装
-```
-# 查看所有内置的物种
-perl configureHomer.pl --list
-# 下载mm39注释数据集（需切换到下载目录）
-perl configureHomer.pl  -install mm39
-```
-
-## zcat文件截取
-```
-# 另存gz文件的前N行，输出txt
-# zcat input_file.gz | head -n 1000 > output_file.txt
-# 另存gz文件的前N行，输出gz
-# zcat input_file.gz | head -n 10000 | gzip > output_file.gz
 ```
 
 ## 自定义脚本编译
@@ -151,14 +112,47 @@ gcc -o methylation_distribution_analysis methylation_distribution_analysis.c -lm
 gcc -o methylation_depth_analysis methylation_depth_analysis.c -lm -lz
 ```
 
+## bashrc修改
+```
+PS1="\u@\h:\W\$ "
+conda activate methylation
+cd /methylation
+export PATH="/methylation/utils:$PATH"
+
+# Check if the SSH service is running
+if ! pgrep -x "sshd" > /dev/null
+then
+    service ssh start
+fi
+```
+
+## locals优化
+
+```
+locale  # 查看当前设置的locale变量
+locale -a  # 查看当前已安装的locale，发现设置的en_US.UTF-8未安装
+apt-get install locales  # 安装locales
+dpkg-reconfigure locales  # 选择安装en_US.UTF-8
+```
+
+## Homer使用
+在 http://homer.ucsd.edu/homer/download.html 下载```configureHomer.pl```文件，用于homer及其数据集的下载、安装
+```
+# 查看所有内置的物种
+perl configureHomer.pl --list
+# 下载mm39注释数据集（需切换到下载目录）
+perl configureHomer.pl  -install mm39
+```
+
+
 ## bedGraphToBigWig操作步骤
 ```
-# 下载
+# 依赖安装
 conda install bioconda::ucsc-bedgraphtobigwig
-# 构建索引
+# 构建基因组索引
 gzip -dk /methylation/genome/mm39/GCF_000001635.27_GRCm39_genomic.fa.gz
 samtools faidx /methylation/genome/mm39/GCF_000001635.27_GRCm39_genomic.fa
-# 转换 (已集成脚本bedgraph2bigwig.sh)
+# 转换 (已集成脚本utils/bedgraph2bigwig.sh)
 gzip -dk 13A/output/bismark_methylation/13A_1_bismark_bt2_pe.deduplicated.bedGraph.gz
 bedGraphToBigWig  13A/output/bismark_methylation/13A_1_bismark_bt2_pe.deduplicated.bedGraph  /methylation/genome/mm39/GCF_000001635.27_GRCm39_genomic.fa.fai  13A/output/bismark_methylation/13A_1_bismark_bt2_pe.deduplicated.bigwig
 ```
