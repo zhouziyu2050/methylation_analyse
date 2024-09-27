@@ -7,11 +7,29 @@
 
 # 关键分析步骤
 
-## 1. bismark分析及质控
+## 1. bismark分析
 
-分析操作程序（耗时长）：[methylation_analyse.py](methylation_analyse.py)
+**分析操作程序**（耗时长）：[methylation_analyse.py](methylation_analyse.py)
 
-质控报告生成程序（Python）：[qc_report.ipynb](qc_report.ipynb)
+| 步骤 | 调用程序 | 步骤描述 |
+|------|--------------------------------------------------|----------------------------------------------------|
+| 1    | [bismark_genome_preparation](https://felixkrueger.github.io/Bismark/options/genome_preparation/) | 创建参考基因组的索引文件                           |
+| 2    | [soapnuke_filter](https://github.com/BGI-flexlab/SOAPnuke) | 使用SOAPnuke进行数据过滤                           |
+| 3    | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 执行序列比对                                       |
+| 4    | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 去除重复片段                                       |
+| 5    | [bismark_methylation_extractor](https://felixkrueger.github.io/Bismark/options/methylation_extraction/) | 提取甲基化信息                                     |
+| 6    | [methylation_depth_analysis](utils/methylation_depth_analysis) | 自定义脚本，输出甲基化测序深度信息                 |
+| 7    | [methylation_coverage_analyse](utils/methylation_coverage_analyse) | 自定义脚本，输出基于染色体和context的甲基化覆盖度信息 |
+| 8    | [methylation_distribution_analysis](utils/methylation_distribution_analysis) | 自定义脚本，输出基于染色体和context的甲基化分布信息   |
+
+
+**质控报告生成程序**（Python）：[qc_report.ipynb](qc_report.ipynb)
+
+相关链接：
+
+[mm39小鼠基因组文件下载](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) 
+
+[其他基因组文件下载](https://www.ncbi.nlm.nih.gov/datasets/genome/)
 
 ## 2. DMR分析及绘图
 
@@ -52,4 +70,4 @@ report 报告文件夹
 ```
 
 # 染色体名称对应关系
-参考对照表：[Chromosome comparison table.md](Chromosome_comparison_table.md)
+参考对照表：[Chromosome_comparison_table.md](Chromosome_comparison_table.md)
