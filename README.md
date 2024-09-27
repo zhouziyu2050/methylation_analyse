@@ -52,4 +52,4 @@ report 报告文件夹
 ```
 
 # 染色体名称对应关系
-参考：[Chromosome comparison table.ipynb](Chromosome comparison table.ipynb)
+参考对照表：[Chromosome comparison table.md](Chromosome_comparison_table.md)
