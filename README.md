@@ -5,15 +5,15 @@
 
 部署过程说明：[env_setup_guide.md](env_setup_guide.md)
 
-# 关键分析步骤
+# 关键步骤
 
-## 1. bismark分析
+## 1. 甲基化分析及质控
 
-**分析操作程序**（耗时长）：[methylation_analyse.py](methylation_analyse.py)
+**甲基化分析程序**（耗时长）：[methylation_analyse.py](methylation_analyse.py)
 
-| 步骤编号 | 程序来源 | 调用程序                                          | 步骤描述                                         |
-|----------|----------|--------------------------------------------------|--------------------------------------------------|
-| 1        | bismark  | [bismark_genome_preparation](https://felixkrueger.github.io/Bismark/options/genome_preparation/) | 创建参考基因组的索引文件                         |
+| 步骤 | 程序来源 | 调用程序  | 步骤描述   |
+|------|---------|-----------|-----------|
+| 1        | bismark  | [bismark_genome_preparation](https://felixkrueger.github.io/Bismark/options/genome_preparation/) | 创建参考基因组的索引文件（检测到文件已存在则自动跳过）|
 | 2        | SOAPnuke | [soapnuke_filter](https://github.com/BGI-flexlab/SOAPnuke) | 进行数据过滤                                     |
 | 3        | bismark  | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 执行序列比对                                     |
 | 4        | bismark  | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 去除重复片段                                     |
@@ -21,7 +21,6 @@
 | 6        | C语言脚本 | [methylation_depth_analysis](utils/methylation_depth_analysis) | 输出甲基化测序深度信息                           |
 | 7        | C语言脚本 | [methylation_coverage_analyse](utils/methylation_coverage_analyse) | 输出基于染色体和context的甲基化覆盖度信息       |
 | 8        | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis) | 输出基于染色体和context的甲基化分布信息         |
-
 
 
 **质控报告生成程序**（Python）：[qc_report.ipynb](qc_report.ipynb)
