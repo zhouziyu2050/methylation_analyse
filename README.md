@@ -6,23 +6,23 @@
 
 ## 1. bismark分析及质控
 
-分析操作程序（耗时长）：```methylation_analyse.py```
+分析操作程序（耗时长）：[methylation_analyse.py](methylation_analyse.py)
 
-质控报告生成程序：``qc_report.ipynb``
+质控报告生成程序：[qc_report.ipynb](qc_report.ipynb)
 
 ## 2. DMR分析及绘图
 
-DMR分析程序（耗时长）：```DMR_analyse.R```
+DMR分析程序（耗时长）：[DMR_analyse.R](DMR_analyse.R)
 
-DMR绘图程序:```DMR_plot.ipynb```
+DMR绘图程序：[DMR_plot.ipynb](DMR_plot.ipynb)
 
 ## 3. GO & KEGG分析
 
-分析程序：```GO_and_KEGG_analyse.ipynb```
+分析程序：[GO_and_KEGG_analyse.ipynb](GO_and_KEGG_analyse.ipynb)
 
 # 运行环境部署过程
 
-查看：```env_setup_guide.md```
+部署说明：[env_setup_guide.md](env_setup_guide.md)
 
 # report输出结构
 ```
