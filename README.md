@@ -11,16 +11,17 @@
 
 **分析操作程序**（耗时长）：[methylation_analyse.py](methylation_analyse.py)
 
-| 步骤 | 调用程序 | 步骤描述 |
-|------|--------------------------------------------------|----------------------------------------------------|
-| 1    | [bismark_genome_preparation](https://felixkrueger.github.io/Bismark/options/genome_preparation/) | 使用bismark创建参考基因组的索引文件                           |
-| 2    | [soapnuke_filter](https://github.com/BGI-flexlab/SOAPnuke) | 使用SOAPnuke进行数据过滤                           |
-| 3    | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 使用bismark执行序列比对                                       |
-| 4    | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 使用bismark去除重复片段                                       |
-| 5    | [bismark_methylation_extractor](https://felixkrueger.github.io/Bismark/options/methylation_extraction/) | 使用bismark提取甲基化信息                                     |
-| 6    | [methylation_depth_analysis](utils/methylation_depth_analysis) | 自定义脚本，输出甲基化测序深度信息                 |
-| 7    | [methylation_coverage_analyse](utils/methylation_coverage_analyse) | 自定义脚本，输出基于染色体和context的甲基化覆盖度信息 |
-| 8    | [methylation_distribution_analysis](utils/methylation_distribution_analysis) | 自定义脚本，输出基于染色体和context的甲基化分布信息   |
+| 步骤编号 | 程序来源 | 调用程序                                          | 步骤描述                                         |
+|----------|----------|--------------------------------------------------|--------------------------------------------------|
+| 1        | bismark  | [bismark_genome_preparation](https://felixkrueger.github.io/Bismark/options/genome_preparation/) | 创建参考基因组的索引文件                         |
+| 2        | SOAPnuke | [soapnuke_filter](https://github.com/BGI-flexlab/SOAPnuke) | 进行数据过滤                                     |
+| 3        | bismark  | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 执行序列比对                                     |
+| 4        | bismark  | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 去除重复片段                                     |
+| 5        | bismark  | [bismark_methylation_extractor](https://felixkrueger.github.io/Bismark/options/methylation_extraction/) | 提取甲基化信息                                   |
+| 6        | C语言脚本 | [methylation_depth_analysis](utils/methylation_depth_analysis) | 输出甲基化测序深度信息                           |
+| 7        | C语言脚本 | [methylation_coverage_analyse](utils/methylation_coverage_analyse) | 输出基于染色体和context的甲基化覆盖度信息       |
+| 8        | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis) | 输出基于染色体和context的甲基化分布信息         |
+
 
 
 **质控报告生成程序**（Python）：[qc_report.ipynb](qc_report.ipynb)
