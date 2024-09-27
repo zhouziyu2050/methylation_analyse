@@ -3,18 +3,25 @@
 
 
 # 关键分析步骤
-## bismark分析及质控
+
+## 1. bismark分析及质控
+
 分析操作程序（耗时长）：```methylation_analyse.py```
+
 质控报告生成程序：``qc_report.ipynb``
 
-## DMR分析及绘图
+## 2. DMR分析及绘图
+
 DMR分析程序（耗时长）：```DMR_analyse.R```
+
 DMR绘图程序:```DMR_plot.ipynb```
 
-## GO & KEGG分析
+## 3. GO & KEGG分析
+
 分析程序：```GO_and_KEGG_analyse.ipynb```
 
 # 运行环境部署过程
+
 查看：```Environmental setup.md```
 
 # report输出结构
