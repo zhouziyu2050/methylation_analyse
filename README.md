@@ -22,7 +22,7 @@ DMR绘图程序:```DMR_plot.ipynb```
 
 # 运行环境部署过程
 
-查看：```Environmental setup.md```
+查看：```env_setup_guide.md```
 
 # report输出结构
 ```
