@@ -11,17 +11,17 @@
 
 分析操作程序（耗时长）：[methylation_analyse.py](methylation_analyse.py)
 
-质控报告生成程序：[qc_report.ipynb](qc_report.ipynb)
+质控报告生成程序（Python）：[qc_report.ipynb](qc_report.ipynb)
 
 ## 2. DMR分析及绘图
 
 DMR分析程序（耗时长）：[DMR_analyse.R](DMR_analyse.R)
 
-DMR绘图程序：[DMR_plot.ipynb](DMR_plot.ipynb)
+DMR绘图程序（R语言）：[DMR_plot.ipynb](DMR_plot.ipynb)
 
 ## 3. GO & KEGG分析
 
-分析程序：[GO_and_KEGG_analyse.ipynb](GO_and_KEGG_analyse.ipynb)
+分析程序（R语言）：[GO_and_KEGG_analyse.ipynb](GO_and_KEGG_analyse.ipynb)
 
 # report输出结构
 ```
