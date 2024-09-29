@@ -1,0 +1,72 @@
+/****************************
+* 本文件支持添加单行及多行注释
+* 所有带默认值的参数均可不填
+* samples可以传入多个样本
+***************************/
+{
+    "genome_folder": "/methylation/genome/mm39/", // 参考基因组文件所在文件夹（必传）
+    "skip_filter": false, // 是否跳过清洗数据，默认值为false
+    "parallel_num": 30, // 最大使用线程数，默认值为30
+    "parallel_alignment": 6, // 对齐比对的线程数，线程过多容易内存溢出，默认值为6
+    "samples": [
+        {
+            "sample_name": "13A", // 样本名（必传）
+            "group_name": "Treatment", // 样本所属分组（必传）
+            "input_1": "13A/13A_1.fq.gz", // 测序文件1的路径，默认值为: {sample_name}/{sample_name}_1.fq.gz
+            "input_2": "13A/13A_2.fq.gz", // 测序文件2的路径，默认值为: {sample_name}/{sample_name}_2.fq.gz
+            "output_dir": "13A/output", // 输出的中间文件存放路径，默认值为:{input_1所在文件夹}/output
+            "log_dir": "13A/log", // 日志文件夹，默认值为:{input_1所在文件夹}/log
+            "report_dir": "report/13A", // 报告输出路径，默认值为:{input_1所在文件夹}/report
+        },
+        {
+            "sample_name": "32A",
+            "group_name": "Treatment",
+            "report_dir": "report/32A",
+        },
+        {
+            "sample_name": "50A",
+            "group_name": "Treatment",
+            "report_dir": "report/50A"
+        },
+        {
+            "sample_name": "26A",
+            "group_name": "Control",
+            "report_dir": "report/26A"
+        },
+        {
+            "sample_name": "28A",
+            "group_name": "Control",
+            "report_dir": "report/28A"
+        },
+        {
+            "sample_name": "38A",
+            "group_name": "Control",
+            "report_dir": "report/38A"
+        },
+        {
+            "sample_name": "74A",
+            "group_name": "Control",
+            "report_dir": "report/74A"
+        },
+        {
+            "sample_name": "25A",
+            "group_name": "Wild",
+            "report_dir": "report/25A"
+        },
+        {
+            "sample_name": "75A",
+            "group_name": "Wild",
+            "report_dir": "report/75A"
+        },
+        {
+            "sample_name": "88A",
+            "group_name": "Wild",
+            "report_dir": "report/88A"
+        },
+        {
+            "sample_name": "97A",
+            "group_name": "Wild",
+            "report_dir": "report/97A"
+        }
+    ]
+}
