@@ -11,25 +11,44 @@
 
 **甲基化分析程序**（耗时长）：[methylation_analyse.py](methylation_analyse.py)
 
+关键参数描述：
+
+| 参数                           | 默认值                           | 描述                                                   |
+|--------------------------------|-----------------------------------|-------------------------------------------------------|
+| `-h, --help`                   |                                   | 显示帮助信息并退出                                     |
+| `--config <file>`              |                                   | 添加配置文件（如果设置了该参数，其他参数都不生效）      |
+| `--genome_folder <folder>`     |                                   | 参考基因组文件所在文件夹（必传）                        |
+| `--skip_filter`                |                                   | 添加该参数以跳过数据清洗步骤                            |
+| `--parallel_num <num>`         | 30                                | 最大使用线程数                                          |
+| `--parallel_alignment <num>`   | 6                                 | 对齐比对的线程数，线程过多容易内存溢出                  |
+| `--sample_name <name>`         |                                   | 样本名（必传）                                          |
+| `--group_name <name>`          |                                   | 样本所属分组（必传）                                    |
+| `--input_1 <path>`             | `{sample_name}/{sample_name}_1.fq.gz` | 测序文件1的路径                                     |
+| `--input_2 <path>`             | `{sample_name}/{sample_name}_2.fq.gz` | 测序文件2的路径                                     |
+| `--output_dir <folder>`        | `{input_1所在文件夹}/output`    | 输出的中间文件存放路径                                     |
+| `--log_dir <folder>`           | `{input_1所在文件夹}/log`       | 日志文件夹                                                 |
+| `--report_dir <folder>`        | `{input_1所在文件夹}/report`    | 报告输出路径                                               |
+
+注：使用config配置文件可以同时传入多个样本，否则只能每次传入一个样本。
+
+参考基因组文件下载地址：[mm39小鼠基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) , [其他基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/)
+
+关键分析步骤：
+
 | 步骤 | 程序来源 | 调用程序  | 步骤描述   |
-|------|---------|-----------|-----------|
+|------|----------|------------|------------|
 | 1        | bismark  | [bismark_genome_preparation](https://felixkrueger.github.io/Bismark/options/genome_preparation/) | 创建参考基因组的索引文件（检测到文件已存在则自动跳过）|
-| 2        | SOAPnuke | [soapnuke_filter](https://github.com/BGI-flexlab/SOAPnuke) | 进行数据过滤                                     |
-| 3        | bismark  | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 执行序列比对                                     |
-| 4        | bismark  | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 去除重复片段                                     |
-| 5        | bismark  | [bismark_methylation_extractor](https://felixkrueger.github.io/Bismark/options/methylation_extraction/) | 提取甲基化信息                                   |
-| 6        | C语言脚本 | [methylation_depth_analysis](utils/methylation_depth_analysis) | 输出甲基化测序深度信息                           |
-| 7        | C语言脚本 | [methylation_coverage_analyse](utils/methylation_coverage_analyse) | 输出基于染色体和context的甲基化覆盖度信息       |
-| 8        | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis) | 输出基于染色体和context的甲基化分布信息         |
+| 2        | SOAPnuke | [soapnuke_filter](https://github.com/BGI-flexlab/SOAPnuke) | 进行数据过滤|
+| 3        | bismark  | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 执行序列比对|
+| 4        | bismark  | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 去除重复片段|
+| 5        | bismark  | [bismark_methylation_extractor](https://felixkrueger.github.io/Bismark/options/methylation_extraction/) | 提取甲基化信息|
+| 6        | C语言脚本 | [methylation_depth_analysis](utils/methylation_depth_analysis) | 输出甲基化测序深度信息|
+| 7        | C语言脚本 | [methylation_coverage_analyse](utils/methylation_coverage_analyse) | 输出基于染色体和context的甲基化覆盖度信息|
+| 8        | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis) | 输出基于染色体和context的甲基化分布信息|
 
 
 **质控报告生成程序**（Python）：[qc_report.ipynb](qc_report.ipynb)
 
-相关链接：
-
-[mm39小鼠基因组文件下载](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) 
-
-[其他基因组文件下载](https://www.ncbi.nlm.nih.gov/datasets/genome/)
 
 ## 2. DMR分析及绘图
 
