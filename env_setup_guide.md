@@ -1,9 +1,9 @@
 ## docker操作
 ```
-## 镜像拉取
+# 镜像拉取
 docker pull docker.anyhub.us.kg/continuumio/anaconda3
 
-## 创建容器
+# 创建容器（映射ssh端口、映射基因文件夹、设置资源上限、设置禁止kill）
 docker run -itd \
   -p 22224:22 \
   --name methylation \
@@ -15,11 +15,9 @@ docker run -itd \
   methylation:v1.0
 
 
-## 进入容器
+# 进入容器
 docker exec -it methylation /bin/bash
 
-## 进入甲基化分析数据目录
-cd /methylation/F24A080000424_MUSekgzH_20240805100100/
 ```
 
 
