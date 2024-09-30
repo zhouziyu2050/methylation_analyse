@@ -1,0 +1,33 @@
+name: methylation
+channels:
+  - https://mirrors.pku.edu.cn/anaconda/pkgs/main
+  - https://mirrors.pku.edu.cn/anaconda/pkgs/r
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python==3.10.13 # 安装python
+
+  - shuaizhou::soapnuke=2.1.9  # DNA测序数据的质量控制和校正工具,安装后调用名称为SOAPnuke
+  - bioconda::bowtie2=2.5.4    # 快速对齐短序列读取到参考基因组的工具
+  - bioconda::samtools=1.20    # SAM/BAM 格式的工具集，用于处理对齐数据
+  - conda-forge::libgcc-ng=14.1.0  # GCC 的库文件，用于编译和链接 C/C++ 代码
+  - bioconda::bismark=0.24.2   # 对齐甲基化测序数据并计算 CpG 位点的甲基化水平
+  - bioconda::bedtools=2.31.1  # 对 BED 格式的文件进行操作，用于基因组区间分析
+  - bioconda::bedops           # 用于处理 BED 格式的文件，提供多种操作功能
+  # - bioconda::metilene        # 用于识别差异甲基化区域（DMRs）的工具
+  - bioconda::bioconductor-rtracklayer  # 用于读取和操作生物信息学数据的 R 包
+  - bioconda::homer            # 高通量测序数据分析工具，包括 peak calling 和 motif 分析
+
+  - r-base=4.3.3 # 安装R及依赖
+  - bioconda::bioconductor-dmrcaller # 用于计算DMR
+  - bioconda::bioconductor-clusterprofiler # 用于基因富集
+  - conda-forge::libxml2 # conda安装clusterprofiler时可能遗漏该包，手动安装
+  - conda-forge::r-tidyverse # 数据处理工具集
+  - bioconda::bioconductor-biomart # 用于将ensembl gene id转gene_ids
+  - bioconda::bioconductor-txdb.mmusculus.ucsc.mm39.knowngene # 安装注释库
+  - bioconda::bioconductor-ggbio # 安装ggbio
+  - conda-forge::r-devtools # 安装devtools（装transPlotR）
+  - bioconda::bioconductor-org.mm.eg.db # 小鼠基因组注释库
+  - r-circlize==0.4.16 # 绘制Circos图
+  - r-irkernel  # 安装 IRKernel，用于在jupyter notebook使用R
