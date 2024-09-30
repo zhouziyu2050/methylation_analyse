@@ -30,4 +30,5 @@ dependencies:
   - conda-forge::r-devtools # 安装devtools（装transPlotR）
   - bioconda::bioconductor-org.mm.eg.db # 小鼠基因组注释库
   - r-circlize==0.4.16 # 绘制Circos图
+  - conda-forge::r-getopt # Rscript参数解析
   - r-irkernel  # 安装 IRKernel，用于在jupyter notebook使用R
