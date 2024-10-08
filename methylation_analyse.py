@@ -45,15 +45,15 @@ def mkdirs(sample, config):
 
 
 # 1.创建参考基因组的索引文件（每个参考基因组只需要执行一次）
-def bismark_genome_preparation():
+def bismark_genome_preparation(config):
     # 文档地址：https://felixkrueger.github.io/Bismark/options/genome_preparation/
     # 基因组下载地址：https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/
 
     # 定义参数字典
     params = {
         "--bowtie2": "",  # 使用 Bowtie2 作为比对工具
-        "--parallel": parallel_num // 2,  # 每个线程实际使用2个核心，所以这里减半
-        genome_folder: "",  # 参考基因组文件夹
+        "--parallel": config.parallel_num // 2,  # 每个线程实际使用2个核心，所以这里减半
+        config.genome_folder: "",  # 参考基因组文件夹
     }
     # 构造命令字符串
     cmd = dict2cmd("bismark_genome_preparation", params)
@@ -88,12 +88,8 @@ def soapnuke_filter(sample, config):
 # 3.序列比对（20小时）
 def bismark_alignment(sample, config):
     # 文档地址：https://felixkrueger.github.io/Bismark/options/alignment/
-    input_file_1 = (
-        f"{sample.output_dir}/{'soapnuke/' if not skip_filter else '/'}{os.path.basename(sample.input_1)}"
-    )
-    input_file_2 = (
-        f"{sample.output_dir}/{'soapnuke/' if not skip_filter else '/'}{os.path.basename(sample.input_2)}"
-    )
+    input_file_1 = f"{sample.output_dir}/{'soapnuke/' if not sample.skip_filter else '/'}{os.path.basename(sample.input_1)}"
+    input_file_2 = f"{sample.output_dir}/{'soapnuke/' if not sample.skip_filter else '/'}{os.path.basename(sample.input_2)}"
     temp_dir = f"{sample.output_dir}/bismark_alignment/temp/"
     output_dir = f"{sample.output_dir}/bismark_alignment/"
     # 定义参数字典
@@ -159,7 +155,7 @@ def bismark_methylation_extractor(sample, config):
 
 
 # 使用自定义脚本1输出基于染色体的甲基化测序深度信息
-def methylation_depth_analysis(sample):
+def methylation_depth_analysis(sample, config):
     input_file = f'"{sample.output_dir}/bismark_methylation/{sample.prefix}_bismark_bt2_pe.deduplicated.CX_report.txt*.gz"'
     output_file = f"{sample.output_dir}/{sample.sample_name}_methylation_depth_report.txt"
 
@@ -168,8 +164,8 @@ def methylation_depth_analysis(sample):
         input_file: "",  # 输入文件的路径
         output_file: "",  # 输出文件的路径
     }
-    # 构造命令字符串
-    cmd = dict2cmd("/methylation/utils/methylation_depth_analysis", params)
+    # 使用bash避免权限问题
+    cmd = dict2cmd(f"bash {config.utils_folder}/utils/methylation_depth_analysis", params)
     return cmd
 
 
@@ -183,8 +179,8 @@ def methylation_coverage_analyse(sample):
         input_file: "",  # 输入文件的路径
         output_file: "",  # 输出文件的路径
     }
-    # 构造命令字符串
-    cmd = dict2cmd("/methylation/utils/methylation_coverage_analyse", params)
+    # 使用bash避免权限问题
+    cmd = dict2cmd(f"bash {config.utils_folder}/utils/methylation_coverage_analyse", params)
     return cmd
 
 
@@ -197,8 +193,8 @@ def methylation_distribution_analysis(sample):
         input_file: "",  # 输入文件的路径
         output_file: "",  # 输出文件的路径
     }
-    # 构造命令字符串
-    cmd = dict2cmd("/methylation/utils/methylation_distribution_analysis", params)
+    # 使用bash避免权限问题
+    cmd = dict2cmd(f"bash {config.utils_folder}/utils/methylation_distribution_analysis", params)
     return cmd
 
 
@@ -218,7 +214,7 @@ def execute_shell_command(command, log_dir="./log/"):
     # 设置东八区时区（当前进程及子进程有效）
     os.environ["TZ"] = "Asia/Shanghai"
     time.tzset()
-    
+
     # 获取当前时间作为日志文件名的一部分
     current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     log_file_name = f"{log_dir}/{current_time}_{program_name}.log"
@@ -304,6 +300,7 @@ def jsonload(file_path):
 DEFAULTS = {
     # 公共默认参数
     "genome_folder": None,
+    "utils_folder":".",
     "skip_filter": False,
     "parallel_num": 30,
     "parallel_alignment": 6,
@@ -335,13 +332,21 @@ def parse_public_config(data):
         raise "genome_folder不可缺失"
 
     config = DotDict()
-    config.genome_folder = data.get("genome_folder")
+    config.genome_folder = data.get("genome_folder").rstrip("/")
+    config.utils_folder = data.get("utils_folder", DEFAULTS["utils_folder"]).rstrip("/")
     config.skip_filter = data.get("skip_filter", DEFAULTS["skip_filter"])
     config.parallel_num = data.get("parallel_num", DEFAULTS["parallel_num"])
     config.parallel_alignment = data.get("parallel_alignment", DEFAULTS["parallel_alignment"])
 
+    # 将相对路径转为绝对路径
+    if not os.path.isabs(config.genome_folder):
+        config.genome_folder = os.path.abspath(config.genome_folder)
+
     if not os.path.exists(config.genome_folder):
         raise FileNotFoundError(f"参考基因组文件夹不存在: {config.genome_folder}")
+
+    if not os.path.exists(config.utils_folder):
+        raise FileNotFoundError(f"utils文件夹不存在: {config.utils_folder}")
 
     return config
 
@@ -424,7 +429,7 @@ if __name__ == "__main__":
 
     # 创建参考基因组的索引文件
     if not os.path.exists(config.genome_folder + "Bisulfite_Genome/"):
-        cmd = bismark_genome_preparation()
+        cmd = bismark_genome_preparation(config)
         print("创建参考基因组的索引文件: ", cmd)
         execute_shell_command(cmd, samples[0].log_dir)
     else:
