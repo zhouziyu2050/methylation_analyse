@@ -16,12 +16,15 @@
 | 参数                           | 默认值                           | 描述                                                   |
 |--------------------------------|-----------------------------------|-------------------------------------------------------|
 | `-h, --help`                   |                                   | 显示帮助信息并退出                                     |
-| `--config <file>`              |                                   | 添加配置文件（示例文件：[config.json](config.json)）    |
+| `--config <file>`              |                                   | 添加配置文件（从配置文件读取所有参数，示例文件：[config.json](config.json)）    |
+| **全局参数**                   |                                   |                                                        |
 | `--genome_folder <folder>`     |                                   | 参考基因组文件所在文件夹的路径（必传）                  |
 | `--utils_folder <folder>`      | {当前文件夹}                      | utils文件夹的路径，默认值为当前文件夹                   |
 | `--skip_filter`                |                                   | 添加该参数以跳过数据清洗步骤                            |
 | `--parallel_num <num>`         | 30                                | 最大使用线程数                                          |
 | `--parallel_alignment <num>`   | 6                                 | 对齐比对的线程数，线程过多容易内存溢出                  |
+| `--samples_file <file>`         | None                              | 样本配置文件路径（从配置文件所有的样本参数，支持csv/tsv/excel格式，示例文件：[samples.tsv](samples.tsv)） |
+| **样本参数**                   |                                   | 可从命令行中输入单个样本的参数                          |
 | `--sample_name <name>`         |                                   | 样本名（必传）                                          |
 | `--group_name <name>`          |                                   | 样本所属分组（必传）                                    |
 | `--input_1 <path>`             | `{sample_name}/{sample_name}_1.fq.gz` | 测序文件1的路径                                     |
