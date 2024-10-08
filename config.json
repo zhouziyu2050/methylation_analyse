@@ -1,7 +1,7 @@
 /****************************
 * 本文件支持添加单行及多行注释
 * 所有带默认值的参数均可不填
-* samples可以传入多个样本
+* samples可以通过json数组或指定tsv文件传入多个样本
 ***************************/
 {
     "genome_folder": "/methylation/genome/mm39", // 参考基因组文件所在文件夹的路径（必传）
@@ -9,7 +9,8 @@
     "skip_filter": false, // 是否跳过清洗数据，默认值为false
     "parallel_num": 30, // 最大使用线程数，默认值为30
     "parallel_alignment": 6, // 对齐比对的线程数，线程过多容易内存溢出，默认值为6
-    "samples": [
+    // "samples_file": "config_samples.tsv", // 以tsv/csv/excel文件传入samples参数，优先级大于samples参数
+    "samples": [ // 以json数组形式传入样本参数
         {
             "sample_name": "13A", // 样本名（必传）
             "group_name": "Treatment", // 样本所属分组（必传）

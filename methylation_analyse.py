@@ -300,7 +300,7 @@ def jsonload(file_path):
 DEFAULTS = {
     # 公共默认参数
     "genome_folder": None,
-    "utils_folder":".",
+    "utils_folder": ".",
     "skip_filter": False,
     "parallel_num": 30,
     "parallel_alignment": 6,
@@ -382,19 +382,40 @@ def parse_sample_config(data):
     return sample
 
 
+# 自动识别格式并读取samples文件为pandas格式
+def read_samples_file(file_path):
+    import pandas as pd
+
+    if not os.path.exists(file_path):
+        raise FileNotFoundError("samples文件不存在")
+    if file_path.endswith(".csv"):
+        # 读取 CSV 文件
+        samples = pd.read_csv(file_path)
+    elif file_path.endswith(".xls") or file_path.endswith(".xlsx"):
+        # 读取 Excel 文件
+        samples = pd.read_excel(file_path)
+    elif file_path.endswith(".tsv"):
+        # 读取 TSV 文件 (tab分隔符)
+        samples = pd.read_csv(file_path, sep="\t")
+    else:
+        # 默认为tsv格式
+        samples = pd.read_csv(file_path, sep="\t")
+    return samples
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="甲基化分析参数描述")
     # 添加config文件路径参数
     parser.add_argument("--config", type=str, help="添加配置文件（如果设置了该参数，其他参数都不生效）")
     # 添加公共参数
     parser.add_argument("--genome_folder", type=str, help="参考基因组文件所在文件夹（必传）")
-    parser.add_argument("--skip_filter", action="store_false", help="添加该参数以跳过数据清洗步骤")
+    parser.add_argument("--skip_filter", action="store_true", help="添加该参数以跳过数据清洗步骤")
     parser.add_argument("--parallel_num", type=int, default=30, help="最大使用线程数，默认值为30")
     parser.add_argument(
         "--parallel_alignment",
         type=int,
         default=6,
-        help="对齐比对的线程数，线程过多容易内存溢出，默认值为6",
+        help="比对使用的线程数，容易内存溢出，默认值为6",
     )
     # 添加样本参数
     parser.add_argument("--sample_name", type=str, help="样本名（必传）")
@@ -419,16 +440,23 @@ if __name__ == "__main__":
         data = jsonload(args.config)
         # 解析公共参数
         config = parse_public_config(data)
-        # 遍历解析样本参数
-        samples = [parse_sample_config(sample) for sample in data["samples"]]
-    else:  # 否则全部从args读取参数
+        # 解析样本参数
+        # if isinstance(data["samples"], str):
+        if "samples_file" in data:
+            # 传入表格文件，则使用pandas读取表格
+            samples_pd = read_samples_file(data["samples_file"])
+            samples = [parse_sample_config(sample) for i, sample in samples_pd.iterrows()]
+        else:
+            # 遍历json解析样本参数
+            samples = [parse_sample_config(sample) for sample in data["samples"]]
+    else:  # 否则从args读取参数
         # 解析公共参数
         config = parse_public_config(args)
         # 解析样本参数
         samples = [parse_sample_config(args)]
 
     # 创建参考基因组的索引文件
-    if not os.path.exists(config.genome_folder + "Bisulfite_Genome/"):
+    if not os.path.exists(config.genome_folder + "/Bisulfite_Genome/"):
         cmd = bismark_genome_preparation(config)
         print("创建参考基因组的索引文件: ", cmd)
         execute_shell_command(cmd, samples[0].log_dir)
