@@ -86,7 +86,7 @@ report 报告文件夹
 │   ├── DMR_gene_all.tsv                                       # DMR分析的结果及完整的基因注释
 │   ├── DMR_genes.tsv                                          # 仅保留基因的关键字段并去重
 │   ├── DMR_summary.tsv                                        # 不同染色体上的DMR数量统计
-│   └── GO/KEGG富集-(all/gain/loss).(png/tsv)                  # GO/KEGG富集分析结果
+│   └── GO/KEGG富集-{all/gain/loss}.{png/tsv}                  # GO/KEGG富集分析结果
 │
 ├── Coverage Rate Group By Chromosome.tsv                      # 每条染色体上的甲基化区域覆盖度
 ├── Methylation Level Groupp By Chromosome.tsv                 # 每条染色体上的甲基化水平
