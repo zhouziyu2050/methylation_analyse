@@ -1,19 +1,4 @@
 ############################################
-# 自定义参数
-############################################
-
-# DMR基因文件路径
-# DMR_File <- "report/治疗vs对照/DMR_genes.tsv"
-# DMR_File <- "report/治疗vs野生/DMR_genes.tsv"
-
-# 自动获取报告文件夹路径
-# report_dir <- dirname(DMR_File)
-
-# 输出指定GO通路集的柱状图（若不需要则直接注释掉）
-# pathways_selected <- c("GO:0007015", "GO:0007264", "GO:1902903", "GO:0032970")
-
-
-############################################
 # 参数读取
 ############################################
 
@@ -25,7 +10,7 @@ option_list <- list(
   make_option(c("--genes", "-g"), metavar = "<file>", type = "character", default = NULL, help = "DMR输出的基因文件路径，可以使用相对路径或绝对路径"),
   make_option(c("--report_dir", "-r"), metavar = "<folder>", type = "character", default = NULL, help = "输出报告的文件夹路径，可选，默认值为genes所在文件夹"),
   make_option(c("--pathways_selected", "-p"), metavar = "<string>", type = "character", default = NULL, help = "指定通路，如'GO:0007015,GO:0007264'，多个通路以英文逗号连接")
-  # GO:0007015, GO:0007264, GO:1902903, GO:0032970
+  # GO:0007015,GO:0007264,GO:1902903,GO:0032970
 )
 
 # 解析命令行参数
@@ -34,8 +19,7 @@ options <- parse_args(parser, commandArgs(TRUE))
 
 # 检查是否提供了 --genes 参数
 if (is.null(options$genes)) {
-  cat("--genes参数不可为空。\n")
-  stop()
+  stop("genes参数不可为空。\n")
 }
 
 # 提取参数值
@@ -139,14 +123,28 @@ for (region_type in region_types) {
 
   # 指定GO通路
   if (exists("pathways_selected") && !is.null(pathways_selected)) {
-    cat("GO富集分析(指定通路)...")
-    barplot(ego, showCategory = ego@result$Description[
-      which(rownames(ego@result) %in% pathways_selected)
-    ])
-    ggsave(
-      paste0(report_dir, "/GO富集(指定通路)-", region_type, ".png"),
-      width = 8, height = 6
-    )
+    cat("GO富集分析(指定通路)...", "\n")
+    # 检查pathways_selected是否存在于ego结果中
+    found_pathways <- intersect(pathways_selected, rownames(ego@result))
+    not_found_pathways <- setdiff(pathways_selected, found_pathways) # 找到未匹配的通路
+
+    if (length(found_pathways) > 0) {
+      if (length(not_found_pathways) > 0) {
+        cat("警告：部分指定的通路未找到：", paste(not_found_pathways, collapse = ", "), "\n")
+      }
+
+      # 绘制匹配到的通路
+      barplot(ego, showCategory = ego@result$Description[
+        which(rownames(ego@result) %in% found_pathways)
+      ])
+
+      ggsave(
+        paste0(report_dir, "/GO富集(指定通路)-", region_type, ".png"),
+        width = 8, height = 6
+      )
+    } else {
+      cat("警告：所有指定的通路均未找到\n")
+    }
   }
 
 
