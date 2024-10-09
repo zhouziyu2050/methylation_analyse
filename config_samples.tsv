@@ -1,12 +1,12 @@
-sample_name	group_name	input_1	input_2	prefix	output_dir	log_dir	report_dir
-13A	Treatment	13A/13A_1.fq.gz	13A/13A_2.fq.gz	13A_1	13A/output	13A/log	13A/report
-32A	Treatment	32A/32A_1.fq.gz	32A/32A_2.fq.gz	32A_1	32A/output	32A/log	32A/report
-50A	Treatment	50A/50A_1.fq.gz	50A/50A_2.fq.gz	50A_1	50A/output	50A/log	50A/report
-26A	Control	26A/26A_1.fq.gz	26A/26A_2.fq.gz	26A_1	26A/output	26A/log	26A/report
-28A	Control	28A/28A_1.fq.gz	28A/28A_2.fq.gz	28A_1	28A/output	28A/log	28A/report
-38A	Control	38A/38A_1.fq.gz	38A/38A_2.fq.gz	38A_1	38A/output	38A/log	38A/report
-74A	Control	74A/74A_1.fq.gz	74A/74A_2.fq.gz	74A_1	74A/output	74A/log	74A/report
-25A	Wild	25A/25A_1.fq.gz	25A/25A_2.fq.gz	25A_1	25A/output	25A/log	25A/report
-75A	Wild	75A/75A_1.fq.gz	75A/75A_2.fq.gz	75A_1	75A/output	75A/log	75A/report
-88A	Wild	88A/88A_1.fq.gz	88A/88A_2.fq.gz	88A_1	88A/output	88A/log	88A/report
-97A	Wild	97A/97A_1.fq.gz	97A/97A_2.fq.gz	97A_1	97A/output	97A/log	97A/report
+sample_name	group_name	input_1	input_2	output_dir	log_dir	report_dir
+13A	Treatment	13A/13A_1.fq.gz	13A/13A_2.fq.gz	13A/output	13A/log	13A/report
+32A	Treatment	32A/32A_1.fq.gz	32A/32A_2.fq.gz	32A/output	32A/log	32A/report
+50A	Treatment	50A/50A_1.fq.gz	50A/50A_2.fq.gz	50A/output	50A/log	50A/report
+26A	Control	26A/26A_1.fq.gz	26A/26A_2.fq.gz	26A/output	26A/log	26A/report
+28A	Control	28A/28A_1.fq.gz	28A/28A_2.fq.gz	28A/output	28A/log	28A/report
+38A	Control	38A/38A_1.fq.gz	38A/38A_2.fq.gz	38A/output	38A/log	38A/report
+74A	Control	74A/74A_1.fq.gz	74A/74A_2.fq.gz	74A/output	74A/log	74A/report
+25A	Wild	25A/25A_1.fq.gz	25A/25A_2.fq.gz	25A/output	25A/log	25A/report
+75A	Wild	75A/75A_1.fq.gz	75A/75A_2.fq.gz	75A/output	75A/log	75A/report
+88A	Wild	88A/88A_1.fq.gz	88A/88A_2.fq.gz	88A/output	88A/log	88A/report
+97A	Wild	97A/97A_1.fq.gz	97A/97A_2.fq.gz	97A/output	97A/log	97A/report
