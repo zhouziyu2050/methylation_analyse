@@ -59,6 +59,22 @@
 
 **质控报告生成程序**（Python）：[qc_report.ipynb](qc_report.ipynb)
 
+质控数据图表：
+
+| 名称                     | 文件名                                               | 描述                                         |
+|--------------------------|------------------------------------------------------|-----------------------------------------------|
+| 测序质量基本统计表        | Clean_stat.xls                                       | 数据清洗后的基本统计数据                      |
+| QC质控表                  | QC quality control table for each sample.tsv         | 与参考基因组比对结果的质控统计信息            |
+| 测序深度分布图            | Coverage of Corresponding Depth in Sample.jpg        | 每个样本中不同C碱基在不同测序深度的分布情况    |
+| 测序深度累积分布图        | Cumulative Coverage of Corresponding Depth in Sample.jpg | 每个样本中不同C碱基在不同测序深度的累积分布情况 |
+| C位点覆盖度统计表         | Coverage Rate Group By Chromosome.tsv                | 样品在全基因组各染色体上的C位点覆盖度          |
+| QC质控表(去重后)          | QC quality control table for each sample (deduplicated).tsv | 去重后的QC质控分析                     |
+| 染色体甲基化水平统计表    | Methylation Level Groupp By Chromosome.tsv           | 样品全基因组及各染色体的平均甲基化水平         |
+| M-bias图                  | M-bias Read {1/2}.jpg                                |                                               |
+| 不同context比例统计表     | Proportions of Three Types of Methylated Cytosine.tsv | mCG、mCHG和mCHH三种类型甲基化胞嘧啶的比例统计 |
+| 不同context比例饼图       | The proportion of every type mC.jpg                  | mCG、mCHG和mCHH三种类型甲基化胞嘧啶的比例饼图   |
+| 甲基化水平分布图          | Methylation Level Distribution.jpg                   | 不同甲基化比例的分布情况（按每10%分组）         |
+| 甲基化水平累积分布图      | Cumulative Methylation Level Distribution.jpg        | 不同甲基化比例的累积分布情况（按每1%分组）       |
 
 ## 2. DMR分析及绘图
 
