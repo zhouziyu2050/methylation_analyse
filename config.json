@@ -1,6 +1,6 @@
 /****************************
 * 本文件支持添加单行及多行注释
-* 所有带默认值的参数均可不填
+* 带默认值的参数均可不填
 * samples可以通过json数组或指定tsv文件传入多个样本
 ***************************/
 {
@@ -9,6 +9,8 @@
     "skip_filter": false, // 是否跳过清洗数据，默认值为false
     "parallel_num": 30, // 最大使用线程数，默认值为30
     "parallel_alignment": 6, // 对齐比对的线程数，线程过多容易内存溢出，默认值为6
+    "global_report_dir":"./report", // 全局报告输出文件夹（不宜放在样本文件夹中的报告），默认值为：{当前文件夹/report}
+    "global_output_dir":"./output", // 全局中间文件输出文件夹（不宜放在样本文件夹中的中间文件），默认值为：{当前文件夹/output}
     // "samples_file": "config_samples.tsv", // 以tsv/csv/excel文件传入samples参数，优先级大于samples参数
     "samples": [ // 以json数组形式传入样本参数
         {
@@ -17,8 +19,8 @@
             "input_1": "13A/13A_1.fq.gz", // 测序文件1的路径，默认值为: {sample_name}/{sample_name}_1.fq.gz
             "input_2": "13A/13A_2.fq.gz", // 测序文件2的路径，默认值为: {sample_name}/{sample_name}_2.fq.gz
             "output_dir": "13A/output", // 输出的中间文件存放路径，默认值为:{input_1所在文件夹}/output
+            "report_dir": "report/13A", // 样本对应的报告输出路径，默认值为:{input_1所在文件夹}/report
             "log_dir": "13A/log", // 日志文件夹，默认值为:{input_1所在文件夹}/log
-            "report_dir": "report/13A", // 报告输出路径，默认值为:{input_1所在文件夹}/report
         },
         {
             "sample_name": "32A",
