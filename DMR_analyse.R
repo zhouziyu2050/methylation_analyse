@@ -1,31 +1,181 @@
-# 加载库
-library(DMRcaller)
-library(betareg)
-library(tibble)
-library(data.table)
-
-# 设置工作目录
-setwd("/methylation/F24A080000424_MUSekgzH_20240805100100")
-
 ##################################################################
-# 参数设置
+# 参数读取
 ##################################################################
 
-# # Sample names and conditions
-# sample_names <- c("13A", "32A", "50A", "26A", "28A", "38A", "74A")
-# condition <- c("Treatment", "Treatment", "Treatment", "Control", "Control", "Control", "Control")
+# 加载读取数据的包
+library(optparse)
+library(jsonlite)
+library(readr) # 用于读取CSV/TSV文件
+library(readxl) # 用于读取Excel文件
 
-# # 输出路径设置
-# output_dir <- "output/治疗vs对照/" # 中间文件输出路径
-# report_dir <- "report/治疗vs对照/" # 报告文件输出路径
+# 读取JSON文件并移除注释
+read_json <- function(config_file) {
+  json_string <- readLines(config_file, warn = FALSE)
+  json_string <- paste(json_string, collapse = "\n")
 
-# Sample names and conditions
-sample_names <- c("13A", "32A", "50A", "25A", "75A", "88A", "97A")
-condition <- c("Treatment", "Treatment", "Treatment", "Wild", "Wild", "Wild", "Wild")
-# 输出路径设置
-output_dir <- "output/治疗vs野生/" # 中间文件输出路径
-report_dir <- "report/治疗vs野生/" # 报告文件输出路径
+  # 去除单行注释 // 之后的内容
+  json_string <- gsub("//.*", "", json_string, perl = TRUE)
+  # 移除多行注释 (/* ... */)，非贪婪模式匹配
+  json_string <- gsub("/\\*[\\s\\S]*?\\*/", "", json_string, perl = TRUE)
+  # 删除 `}` 或 `]` 前面的逗号
+  json_string <- gsub(",(\\s*[\\]}])", "\\1", json_string, perl = TRUE)
 
+  # 将处理后的字符串解析为JSON
+  return(fromJSON(json_string))
+}
+
+# 读取表格数据
+read_data <- function(file_path) {
+  # 获取文件扩展名
+  file_ext <- tools::file_ext(file_path)
+  # 根据文件扩展名选择读取方法
+  if (file_ext == "csv") {
+    data <- read_csv(file_path, show_col_types = FALSE) # 使用 readr 包读取 CSV
+  } else if (file_ext == "tsv") {
+    data <- read_tsv(file_path, show_col_types = FALSE) # 使用 readr 包读取 TSV
+  } else if (file_ext == "xlsx" || file_ext == "xls") {
+    data <- read_excel(file_path) # 使用 readxl 包读取 Excel 文件
+  } else {
+    data <- read_tsv(file_path) # 默认使用tsv格式
+  }
+  return(as.data.frame(data))
+}
+
+# 定义命令行参数
+option_list <- list(
+  make_option(c("-c", "--config"),
+    type = "character", default = NULL,
+    help = "配置文件路径", metavar = "character"
+  ),
+  make_option(c("-o", "--output_dir"),
+    type = "character", default = NULL,
+    help = "中间文件的输出文件夹", metavar = "character"
+  ),
+  make_option(c("-r", "--report_dir"),
+    type = "character", default = NULL,
+    help = "报告的输出文件夹", metavar = "character"
+  ),
+  make_option(c("-a", "--group_a"),
+    type = "character", default = NULL,
+    help = "DMR的组A名称", metavar = "character"
+  ),
+  make_option(c("-b", "--group_b"),
+    type = "character", default = NULL,
+    help = "DMR的组B名称", metavar = "character"
+  ),
+  make_option(c("-f", "--samples_file"),
+    type = "character", default = NULL,
+    help = "以tsv/csv/excel文件传入样本参数", metavar = "character"
+  )
+)
+# 解析命令行参数
+opt_parser <- OptionParser(option_list = option_list)
+opt <- parse_args(opt_parser)
+
+# 检查是否提供了config参数
+if (!is.null(opt$config)) {
+  # 读取配置文件
+  config <- read_json(opt$config)
+
+  # 设置默认值为配置文件中的值
+  output_dir <- config$output_dir
+  report_dir <- config$report_dir
+  group_a <- config$group_a
+  group_b <- config$group_b
+  samples_file <- config$samples_file
+  samples <- as.data.frame(config$samples)
+}
+
+# 如果命令行参数传入了相同的参数，则使用命令行参数覆盖配置中的值
+if (!is.null(opt$output_dir)) {
+  output_dir <- opt$output_dir
+}
+if (!is.null(opt$report_dir)) {
+  report_dir <- opt$report_dir
+}
+if (!is.null(opt$group_a)) {
+  group_a <- opt$group_a
+}
+if (!is.null(opt$group_b)) {
+  group_b <- opt$group_b
+}
+if (!is.null(opt$samples_file)) {
+  samples_file <- opt$samples_file
+}
+
+# 确保必填参数不为空
+if (is.null(group_a) || is.null(group_b)) {
+  print_help(opt_parser)
+  stop("缺少必填参数：group_a 和/或 group_b")
+}
+if (is.null(samples_file) && is.null(samples)) {
+  print_help(opt_parser)
+  stop("samples_file参数和配置文件中的samples参数不能同时为空")
+}
+
+
+# 设置默认输出文件夹
+if (is.null(output_dir)) {
+  output_dir <- "./output"
+}
+if (is.null(report_dir)) {
+  report_dir <- "./report"
+}
+# 给输出文件夹追加分组信息
+output_dir <- paste0(sub("/$", "", output_dir), "/", group_a, "_and_", group_b)
+report_dir <- paste0(sub("/$", "", report_dir), "/", group_a, "_and_", group_b)
+
+# 检查并创建对应的输出文件夹
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+if (!dir.exists(report_dir)) {
+  dir.create(report_dir, recursive = TRUE)
+}
+
+# 如果提供了samples_file参数，则从文件读取samples数据
+if (!is.null(opt$samples_file)) {
+  samples <- read_data(opt$samples_file)
+}
+
+# 按传入的两个分组过滤数据
+samples <- samples[samples$group_name %in% c(group_a, group_b), ]
+
+# 检查sample_name和group_names是否存在空值
+if (any(is.na(samples$sample_name)) || any(nchar(samples$sample_name) == 0)) {
+  stop("所有样本的sample_name不能为空")
+}
+if (any(is.na(samples$group_name)) || any(nchar(samples$group_name) == 0)) {
+  stop("所有样本的group_name不能为空")
+}
+
+# 设置样本输出文件的默认路径和prefix（用于寻找CX_report文件）
+samples$output_dir <- ifelse(
+  is.na(samples$output_dir) | samples$output_dir == "",
+  paste0(samples$sample_name, "/output"),
+  samples$output_dir
+)
+samples$prefix <- ifelse(!is.na(samples$input_1) & samples$input_1 != "",
+  sub("\\..*$", "", basename(samples$input_1)), # 提取文件名并去掉后缀
+  paste0(samples$sample_name, "_1") # 使用 sample_name 和 _1
+)
+
+# 读取sample_names和group_names
+sample_names <- samples$sample_name
+group_names <- samples$group_name
+
+
+# 打印以确认参数
+cat("中间文件输出文件夹:", output_dir, "\n")
+cat("报告输出文件夹:", report_dir, "\n")
+cat("组A名称:", group_a, "\n")
+cat("组B名称:", group_b, "\n")
+cat("样本名称:", paste(samples$sample_name, collapse = ", "), "\n")
+cat("样本分组:", paste(samples$group_name, collapse = ", "), "\n")
+
+##################################################################
+# 补充参数及文件夹检查
+##################################################################
 
 # 需要处理的染色体名称
 seqnames <- c(
@@ -39,10 +189,6 @@ seqnames <- c(
 # seqnames的类型（accession或chromosome，如果设置为accession会在生成dmr报告时自动转换为chromosome）
 seqnames_type <- "accession"
 
-##################################################################
-# DMR区域计算
-##################################################################
-
 # accession和chromosome的映射关系
 accession2chromosome <- c(
   "NC_000067.7" = "chr1", "NC_000068.8" = "chr2", "NC_000069.7" = "chr3",
@@ -55,15 +201,27 @@ accession2chromosome <- c(
   "NC_005089.1" = "chrM"
 )
 
-# 检查并创建中间文件输出路径
-if (!dir.exists(output_dir)) {
-  dir.create(output_dir, recursive = TRUE) # recursive = TRUE 可以递归创建不存在的父目录
-}
 
-# 检查并创建报告文件输出路径
-if (!dir.exists(report_dir)) {
-  dir.create(report_dir, recursive = TRUE)
-}
+##################################################################
+# 加载库
+##################################################################
+
+# library(DMRcaller)
+# library(betareg)
+# library(tibble)
+# library(data.table)
+
+# 静默加载
+suppressPackageStartupMessages(library(DMRcaller))
+suppressPackageStartupMessages(library(betareg))
+suppressPackageStartupMessages(library(tibble))
+suppressPackageStartupMessages(library(data.table))
+
+
+##################################################################
+# DMR区域计算
+##################################################################
+
 
 DMRsReplicatesBinsList <- list()
 for (seqname in seqnames) {
@@ -74,8 +232,8 @@ for (seqname in seqnames) {
   # Loop through each sample name and read the corresponding file
   for (i in seq_along(sample_names)) {
     file_path <- paste0(
-      sample_names[i], "/output/bismark_methylation/",
-      sample_names[i], "_1_bismark_bt2_pe.deduplicated.CX_report.txt.chr",
+      sub("/$", "", samples[i, "output_dir"]), "/bismark_methylation/",
+      samples[i, "prefix"], "_bismark_bt2_pe.deduplicated.CX_report.txt.chr",
       seqname, ".CX_report.txt.gz"
     )
     methylationDataList[[i]] <- readBismark(file_path)
@@ -96,7 +254,7 @@ for (seqname in seqnames) {
       # CG
       DMRsReplicatesBins <- computeDMRsReplicates(
         methylationData = methylationData, # 输入的甲基化数据
-        condition = condition, # 样本的条件（分组信息）
+        condition = group_names, # 样本的条件（分组信息）
         regions = NULL, # 目标区域，如果为 NULL 则使用默认的全基因组区域
         context = c("CG"), # 分析的上下文类型（例如 CG）
         method = "bins", # 用于检测 DMR 的方法，这里使用 "bins" 方法
@@ -128,7 +286,7 @@ for (seqname in seqnames) {
       # CHG
       DMRsReplicatesBins <- computeDMRsReplicates(
         methylationData = methylationData, # 输入的甲基化数据
-        condition = condition, # 样本的条件（分组信息）
+        condition = group_names, # 样本的条件（分组信息）
         regions = NULL, # 目标区域，如果为 NULL 则使用默认的全基因组区域
         context = c("CHG"), # 分析的上下文类型（例如 CG）
         method = "bins", # 用于检测 DMR 的方法，这里使用 "bins" 方法
@@ -161,7 +319,7 @@ for (seqname in seqnames) {
       # CHH
       DMRsReplicatesBins <- computeDMRsReplicates(
         methylationData = methylationData, # 输入的甲基化数据
-        condition = condition, # 样本的条件（分组信息）
+        condition = group_names, # 样本的条件（分组信息）
         regions = NULL, # 目标区域，如果为 NULL 则使用默认的全基因组区域
         context = c("CHH"), # 分析的上下文类型（例如 CG）
         method = "bins", # 用于检测 DMR 的方法，这里使用 "bins" 方法
