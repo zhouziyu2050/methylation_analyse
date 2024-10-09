@@ -127,23 +127,20 @@ for (region_type in region_types) {
     # 检查pathways_selected是否存在于ego结果中
     found_pathways <- intersect(pathways_selected, rownames(ego@result))
     not_found_pathways <- setdiff(pathways_selected, found_pathways) # 找到未匹配的通路
-
     if (length(found_pathways) > 0) {
       if (length(not_found_pathways) > 0) {
-        cat("警告：部分指定的通路未找到：", paste(not_found_pathways, collapse = ", "), "\n")
+        cat("\033[31m警告：部分指定的通路未找到：", paste(not_found_pathways, collapse = ", "), "\033[0m\n")
       }
-
       # 绘制匹配到的通路
       barplot(ego, showCategory = ego@result$Description[
         which(rownames(ego@result) %in% found_pathways)
       ])
-
       ggsave(
         paste0(report_dir, "/GO富集(指定通路)-", region_type, ".png"),
         width = 8, height = 6
       )
     } else {
-      cat("警告：所有指定的通路均未找到\n")
+      cat("\033[31m警告：所有指定的通路均未找到\033[0m\n")
     }
   }
 
@@ -187,11 +184,11 @@ for (region_type in region_types) {
   entrezgene_ids <- ensembl_gene$entrezgene_id
 
   # KEGG
-  cat("KEGG分析(请注意，该步骤需要联网获取数据)...", "\n")
+  cat("KEGG分析(该步骤需要联网获取数据)...", "\n")
   ekg <- enrichKEGG(
     gene = entrezgene_ids, # 输入的差异表达基因。
     keyType = "kegg", # one of "kegg", 'ncbi-geneid', 'ncbi-proteinid', 'uniprot'
-    organism = "mmu", # 物种标识符
+    organism = "mmu", # 物种标识符，hsa:人类; mmu:小鼠
     pvalueCutoff = 0.05 # p 值的阈值，用于筛选富集的 KEGG 路径。
   )
   # 将 ekg 结果设置为可读格式
