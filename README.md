@@ -24,7 +24,7 @@
 | `--parallel_num <num>`         | 30                                | 最大使用线程数                                          |
 | `--parallel_alignment <num>`   | 6                                 | 对齐比对的线程数，线程过多容易内存溢出                  |
 | **样本参数**                   |                                   | 可从命令行中输入单个样本的参数                          |
-| `--samples_file <file>`        | None                              | 样本配置文件路径（从配置文件读取样本参数，支持csv/tsv/excel格式，示例文件：[samples.tsv](samples.tsv)） |
+| `--samples_file <file>`        | None                              | 样本配置文件路径（从配置文件读取样本参数，支持csv/tsv/excel格式，示例文件：[config_samples.tsv](config_samples.tsv)） |
 | `--sample_name <name>`         |                                   | 样本名（必传）                                          |
 | `--group_name <name>`          |                                   | 样本所属分组（必传）                                    |
 | `--input_1 <path>`             | `{sample_name}/{sample_name}_1.fq.gz` | 测序文件1的路径                                     |
@@ -35,7 +35,7 @@
 
 注：
 
-1 使用config配置文件可以同时传入多个样本，否则只能每次传入一个样本。
+1 使用config或samples_file配置文件可以传入多个样本的参数，通过命令行只能传入单个样本的参数。
 
 2 如果使用了配置文件，则其它参数均不生效。
 
