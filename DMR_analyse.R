@@ -83,7 +83,9 @@ if (!is.null(opt$config)) {
   group_a <- config$group_a
   group_b <- config$group_b
   samples_file <- config$samples_file
-  samples <- as.data.frame(config$samples)
+  if (!is.null(config$samples)) {
+    samples <- as.data.frame(config$samples)
+  }
 }
 
 # 如果命令行参数传入了相同的参数，则使用命令行参数覆盖配置中的值
