@@ -19,10 +19,10 @@
 | **全局参数**                   |                                   |                                                        |
 | `--config <file>`              | `NULL`                            | 配置文件路径（从配置文件读取所有参数，json格式，示例文件：[config.json](config.json)）    |
 | `--genome_folder <folder>`     | `NULL`                            | 参考基因组文件所在文件夹的路径（必传）                  |
-| `--utils_folder <folder>`      | {当前文件夹}                      | utils文件夹的路径，默认值为当前文件夹                   |
+| `--utils_folder <folder>`      | `{当前文件夹}`                    | utils文件夹的路径，默认值为当前文件夹                   |
 | `--skip_filter`                | `false`                           | 添加该参数以跳过数据清洗步骤                            |
-| `--parallel_num <num>`         | 30                                | 最大使用线程数                                          |
-| `--parallel_alignment <num>`   | 6                                 | 对齐比对的线程数，线程过多容易内存溢出                  |
+| `--parallel_num <num>`         | `30`                              | 最大使用线程数                                          |
+| `--parallel_alignment <num>`   | `6`                               | 对齐比对的线程数，线程过多容易内存溢出                  |
 | **样本参数**                   |                                   | 可从命令行中输入单个样本的参数                          |
 | `--samples_file <file>`        | `NULL`                            | 样本配置文件路径（从配置文件读取样本参数，支持csv/tsv/excel格式，示例文件：[config_samples.tsv](config_samples.tsv)） |
 | `--sample_name <name>`         | `NULL`                            | 样本名（必传）                                          |
