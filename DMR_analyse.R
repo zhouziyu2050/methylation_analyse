@@ -126,6 +126,14 @@ if (!is.null(opt$samples_file)) {
   samples <- read_data(opt$samples_file)
 }
 
+# 检查group_a, group_b是否存在
+if (!(group_a %in% samples$group_name)) {
+  stop(paste0("组A (", group_a, ") 在 samples 数据中不存在"))
+}
+if (!(group_b %in% samples$group_name)) {
+  stop(paste0("组B (", group_b, ") 在 samples 数据中不存在"))
+}
+
 # 按传入的两个分组过滤数据
 samples <- samples[samples$group_name %in% c(group_a, group_b), ]
 
@@ -358,7 +366,7 @@ if (seqnames_type == "accession") {
 }
 # 将 DMRs 导出为文本文件
 # 为了方便寻找重叠区域未输出表头，其表头为[seqnames start end width strand sumReadsM1 sumReadsN1 proportion1 sumReadsM2 sumReadsN2 proportion2 cytosinesCount context direction pValue regionType]
-write.table(DMRsReplicatesBinsCombined, file = paste0(output_dir, "DMRsReplicatesBins.txt"), sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
+write.table(DMRsReplicatesBinsCombined, file = paste0(output_dir, "/DMRsReplicatesBins.txt"), sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 # 统计DMR信息（每条染色体、不同context所包含DMR的数量）
 cat("输出DMR统计信息...\n")
@@ -391,8 +399,8 @@ cat("DMR注释...\n")
 # 寻找重叠区域并注释
 command <- paste0(
   "bedtools intersect -a ", output_dir,
-  "DMRsReplicatesBins.txt -b /methylation/gencode/gencode.vM35.annotation.bed  -wa -wb > ",
-  output_dir, "DMR_gene_association.bed"
+  "/DMRsReplicatesBins.txt -b /methylation/gencode/gencode.vM35.annotation.bed  -wa -wb > ",
+  output_dir, "/DMR_gene_association.bed"
 )
 system(command)
 
@@ -506,7 +514,7 @@ filtered_genes <- function(df) {
 
 
 # 读取数据
-file_path <- paste0(output_dir, "DMR_gene_association.bed")
+file_path <- paste0(output_dir, "/DMR_gene_association.bed")
 data <- read.table(file_path,
   sep = "\t", header = FALSE,
   stringsAsFactors = FALSE
