@@ -80,6 +80,20 @@
 
 DMR分析程序（耗时长）：[DMR_analyse.R](DMR_analyse.R)
 
+参数描述：
+
+| 参数                  | 默认值                    | 描述                           |
+|-----------------------|--------------------------|--------------------------------|
+| `-h, --help`          |                          | 显示帮助信息                    |
+| `-c`, `--config`      | `NULL`                   | 配置文件路径                    |
+| `-o`, `--output_dir`  | `{当前文件夹}/output`     | 中间文件的输出文件夹            |
+| `-r`, `--report_dir`  | `{当前文件夹}/report`     | 报告的输出文件夹                |
+| `-a`, `--group_a`     | `NULL`                   | DMR的组A名称 (必传)             |
+| `-b`, `--group_b`     | `NULL`                   | DMR的组B名称 (必传)             |
+| `-f`, `--samples_file`| `NULL`                   | 以tsv/csv/excel文件传入样本参数 |
+
+
+
 DMR绘图程序（R语言）：[DMR_plot.ipynb](DMR_plot.ipynb)
 
 ## 3. GO & KEGG分析
