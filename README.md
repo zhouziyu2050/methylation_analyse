@@ -37,9 +37,11 @@
 
 1 使用config或samples_file配置文件可以传入多个样本的参数，通过命令行只能传入单个样本的参数。
 
-2 如果使用了配置文件，则其它参数均不生效。
+2 若设置了配置文件`config`，其他所有参数都仅从配置文件读取。
 
-3 为了方便使用，配置文件中可以使用```//```和```/* */```注释，程序解析时会自动忽略注释内容。
+3 若设置了样本配置文件`samples_file`，所有样本参数都仅从该配置文件读取。
+
+4 为了方便阅读，配置文件中可以使用```//```和```/* */```注释，程序解析时会自动忽略注释内容。
 
 参考基因组文件下载地址：[mm39小鼠基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) , [其他基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/)
 
@@ -92,6 +94,7 @@ DMR分析程序（耗时长）：[DMR_analyse.R](DMR_analyse.R)
 | `-b`, `--group_b`     | `NULL`                   | DMR的组B名称 (必传)             |
 | `-f`, `--samples_file`| `NULL`                   | 以tsv/csv/excel文件传入样本参数 |
 
+注：同时使用配置文件和命令行参数时，命令行参数会覆盖配置文件的参数。
 
 
 DMR绘图程序（R语言）：[DMR_plot.ipynb](DMR_plot.ipynb)
