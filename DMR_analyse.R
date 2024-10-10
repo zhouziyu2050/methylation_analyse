@@ -49,11 +49,11 @@ option_list <- list(
   ),
   make_option(c("-o", "--output_dir"),
     type = "character", default = NULL,
-    help = "中间文件的输出文件夹", metavar = "character"
+    help = "中间文件的输出文件夹，默认值为：{当前文件夹}/output", metavar = "character"
   ),
   make_option(c("-r", "--report_dir"),
     type = "character", default = NULL,
-    help = "报告的输出文件夹", metavar = "character"
+    help = "报告的输出文件夹，默认值为：{当前文件夹}/report", metavar = "character"
   ),
   make_option(c("-a", "--group_a"),
     type = "character", default = NULL,
@@ -113,24 +113,12 @@ if (is.null(samples_file) && is.null(samples)) {
   stop("samples_file参数和配置文件中的samples参数不能同时为空")
 }
 
-
 # 设置默认输出文件夹
 if (is.null(output_dir)) {
   output_dir <- "./output"
 }
 if (is.null(report_dir)) {
   report_dir <- "./report"
-}
-# 给输出文件夹追加分组信息
-output_dir <- paste0(sub("/$", "", output_dir), "/", group_a, "_and_", group_b)
-report_dir <- paste0(sub("/$", "", report_dir), "/", group_a, "_and_", group_b)
-
-# 检查并创建对应的输出文件夹
-if (!dir.exists(output_dir)) {
-  dir.create(output_dir, recursive = TRUE)
-}
-if (!dir.exists(report_dir)) {
-  dir.create(report_dir, recursive = TRUE)
 }
 
 # 如果提供了samples_file参数，则从文件读取samples数据
@@ -200,6 +188,18 @@ accession2chromosome <- c(
   "NC_000085.7" = "chr19", "NC_000086.8" = "chrX", "NC_000087.8" = "chrY",
   "NC_005089.1" = "chrM"
 )
+
+# 给输出文件夹追加分组信息
+output_dir <- paste0(sub("/$", "", output_dir), "/", group_a, "_and_", group_b)
+report_dir <- paste0(sub("/$", "", report_dir), "/", group_a, "_and_", group_b)
+
+# 检查并创建对应的输出文件夹
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+if (!dir.exists(report_dir)) {
+  dir.create(report_dir, recursive = TRUE)
+}
 
 
 ##################################################################
