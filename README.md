@@ -1,9 +1,28 @@
 # methylation_analyse
 基于bismark的全流程甲基化分析，包括数据清洗、序列比对、甲基化提取及DMR分析、GO/KEGG等
 
-# 运行环境部署过程
+# 运行环境部署
 
-部署过程说明：[env_setup_guide.md](env_setup_guide.md)
+```
+# 拉取docker镜像
+docker push zhouziyu2050/methylation:latest
+
+# 创建容器（映射ssh端口、映射基因文件夹、设置资源上限、设置禁止kill）
+docker run -itd \
+  -p 2222:22 \
+  --name methylation \
+  -v ~/methylation:/methylation \
+  --cpus=62 \
+  --memory=120g \
+  --memory-swap=120g \
+  --oom-kill-disable \
+  zhouziyu2050/methylation:latest
+
+# 进入容器
+docker exec -it methylation /bin/bash
+```
+
+环境搭建完整步骤查看：[env_setup_guide.md](env_setup_guide.md)
 
 # 关键步骤
 
