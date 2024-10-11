@@ -1,5 +1,5 @@
 ##################################################################
-# 参数读取
+# 加载读取参数的包及必要的function
 ##################################################################
 
 # 加载读取数据的包
@@ -41,6 +41,10 @@ read_data <- function(file_path) {
   return(as.data.frame(data))
 }
 
+##################################################################
+# 设置和读取参数（如果使用R交互式命令窗口则不运行这部分）
+##################################################################
+
 # 定义命令行参数
 option_list <- list(
   make_option(c("-c", "--config"),
@@ -72,72 +76,65 @@ option_list <- list(
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
 
-# 检查是否提供了config参数
+# 创建一个空的config向量
+config <- list()
+
+# 如果有config参数则从配置文件读取参数
 if (!is.null(opt$config)) {
   # 读取配置文件
   config <- read_json(opt$config)
+}
 
-  # 设置默认值为配置文件中的值
-  output_dir <- config$output_dir
-  report_dir <- config$report_dir
-  group_a <- config$group_a
-  group_b <- config$group_b
-  samples_file <- config$samples_file
-  if (!is.null(config$samples)) {
-    samples <- as.data.frame(config$samples)
+# 如果命令行传入了某参数，则更新config中的对应参数
+for (k in names(opt)) {
+  if (!is.null(opt[[k]]) && opt[[k]] != "") {
+    config[[k]] <- opt[[k]]
   }
 }
 
-# 如果命令行参数传入了相同的参数，则使用命令行参数覆盖配置中的值
-if (!is.null(opt$output_dir)) {
-  output_dir <- opt$output_dir
-}
-if (!is.null(opt$report_dir)) {
-  report_dir <- opt$report_dir
-}
-if (!is.null(opt$group_a)) {
-  group_a <- opt$group_a
-}
-if (!is.null(opt$group_b)) {
-  group_b <- opt$group_b
-}
-if (!is.null(opt$samples_file)) {
-  samples_file <- opt$samples_file
-}
+##################################################################
+# 校验和调整参数
+##################################################################
+
+# 若使用R交互式命令行，则运行以下代码加载config文件
+# config <- read_json("config.json")
 
 # 确保必填参数不为空
-if (is.null(group_a) || is.null(group_b)) {
+if (is.null(config$group_a) || is.null(config$group_b)) {
   print_help(opt_parser)
   stop("缺少必填参数：group_a 和/或 group_b")
 }
-if (is.null(samples_file) && is.null(samples)) {
+if (is.null(config$samples_file) && is.null(config$samples)) {
   print_help(opt_parser)
   stop("samples_file参数和配置文件中的samples参数不能同时为空")
 }
 
-# 设置默认输出文件夹
-if (is.null(output_dir)) {
-  output_dir <- "./output"
-}
-if (is.null(report_dir)) {
-  report_dir <- "./report"
+# 如果提供了samples_file参数，则从文件读取samples数据，否则从config$samples读取
+if (!is.null(config$samples_file)) {
+  samples <- read_data(config$samples_file)
+} else {
+  samples <- as.data.frame(config$samples)
 }
 
-# 如果提供了samples_file参数，则从文件读取samples数据
-if (!is.null(opt$samples_file)) {
-  samples <- read_data(opt$samples_file)
+# 设置默认输出文件夹
+if (is.null(config$output_dir)) {
+  config$output_dir <- "./output"
+}
+if (is.null(config$report_dir)) {
+  config$report_dir <- "./report"
 }
 
 # 检查group_a, group_b是否存在
-if (!(group_a %in% samples$group_name)) {
-  stop(paste0("组A (", group_a, ") 在 samples 数据中不存在"))
+if (!(config$group_a %in% samples$group_name)) {
+  stop(paste0("组A (", config$group_a, ") 在 samples 数据中不存在"))
 }
-if (!(group_b %in% samples$group_name)) {
-  stop(paste0("组B (", group_b, ") 在 samples 数据中不存在"))
+if (!(config$group_b %in% samples$group_name)) {
+  stop(paste0("组B (", config$group_b, ") 在 samples 数据中不存在"))
 }
 
-# 按传入的两个分组过滤数据
-samples <- samples[samples$group_name %in% c(group_a, group_b), ]
+# 按传入的两个分组过滤数据，并重置行号
+samples <- samples[samples$group_name %in% c(config$group_a, config$group_b), ]
+row.names(samples) <- NULL
 
 # 检查sample_name和group_names是否存在空值
 if (any(is.na(samples$sample_name)) || any(nchar(samples$sample_name) == 0)) {
@@ -164,10 +161,10 @@ group_names <- samples$group_name
 
 
 # 打印以确认参数
-cat("中间文件输出文件夹:", output_dir, "\n")
-cat("报告输出文件夹:", report_dir, "\n")
-cat("组A名称:", group_a, "\n")
-cat("组B名称:", group_b, "\n")
+cat("中间文件输出文件夹:", config$output_dir, "\n")
+cat("报告输出文件夹:", config$report_dir, "\n")
+cat("组A名称:", config$group_a, "\n")
+cat("组B名称:", config$group_b, "\n")
 cat("样本名称:", paste(samples$sample_name, collapse = ", "), "\n")
 cat("样本分组:", paste(samples$group_name, collapse = ", "), "\n")
 
@@ -199,16 +196,23 @@ accession2chromosome <- c(
   "NC_005089.1" = "chrM"
 )
 
+
 # 给输出文件夹追加分组信息
-output_dir <- paste0(sub("/$", "", output_dir), "/", group_a, "_and_", group_b)
-report_dir <- paste0(sub("/$", "", report_dir), "/", group_a, "_and_", group_b)
+config$output_dir <- paste0(
+  sub("/$", "", config$output_dir), "/",
+  config$group_a, "_and_", config$group_b
+)
+config$report_dir <- paste0(
+  sub("/$", "", config$report_dir), "/",
+  config$group_a, "_and_", config$group_b
+)
 
 # 检查并创建对应的输出文件夹
-if (!dir.exists(output_dir)) {
-  dir.create(output_dir, recursive = TRUE)
+if (!dir.exists(config$output_dir)) {
+  dir.create(config$output_dir, recursive = TRUE)
 }
-if (!dir.exists(report_dir)) {
-  dir.create(report_dir, recursive = TRUE)
+if (!dir.exists(config$report_dir)) {
+  dir.create(config$report_dir, recursive = TRUE)
 }
 
 
@@ -240,7 +244,7 @@ for (seqname in seqnames) {
   # Initialize an empty list to store the data
   methylationDataList <- list()
   # Loop through each sample name and read the corresponding file
-  for (i in seq_along(sample_names)) {
+  for (i in seq_len(nrow(samples))) {
     file_path <- paste0(
       sub("/$", "", samples[i, "output_dir"]), "/bismark_methylation/",
       samples[i, "prefix"], "_bismark_bt2_pe.deduplicated.CX_report.txt.chr",
@@ -368,7 +372,7 @@ if (seqnames_type == "accession") {
 }
 # 将 DMRs 导出为文本文件
 # 为了方便寻找重叠区域未输出表头，其表头为[seqnames start end width strand sumReadsM1 sumReadsN1 proportion1 sumReadsM2 sumReadsN2 proportion2 cytosinesCount context direction pValue regionType]
-write.table(DMRsReplicatesBinsCombined, file = paste0(output_dir, "/DMRsReplicatesBins.txt"), sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
+write.table(DMRsReplicatesBinsCombined, file = paste0(config$output_dir, "/DMRsReplicatesBins.txt"), sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 # 统计DMR信息（每条染色体、不同context所包含DMR的数量）
 cat("输出DMR统计信息...\n")
@@ -380,7 +384,7 @@ DMRsummary <- as.data.frame.matrix(DMRsummary)
 DMRsummary <- rownames_to_column(DMRsummary, var = "Seqnames")
 # 输出到文件
 write.table(DMRsummary,
-  file = paste0(report_dir, "DMR_summary.tsv"),
+  file = paste0(config$report_dir, "DMR_summary.tsv"),
   sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE
 )
 
@@ -400,9 +404,9 @@ cat("DMR注释...\n")
 
 # 寻找重叠区域并注释
 command <- paste0(
-  "bedtools intersect -a ", output_dir,
+  "bedtools intersect -a ", config$output_dir,
   "/DMRsReplicatesBins.txt -b /methylation/gencode/gencode.vM35.annotation.bed  -wa -wb > ",
-  output_dir, "/DMR_gene_association.bed"
+  config$output_dir, "/DMR_gene_association.bed"
 )
 system(command)
 
@@ -516,7 +520,7 @@ filtered_genes <- function(df) {
 
 
 # 读取数据
-file_path <- paste0(output_dir, "/DMR_gene_association.bed")
+file_path <- paste0(config$output_dir, "/DMR_gene_association.bed")
 data <- read.table(file_path,
   sep = "\t", header = FALSE,
   stringsAsFactors = FALSE
@@ -542,7 +546,7 @@ dmr_gene_all <- parse_extra_column(data)
 
 # 导出到文件
 write.table(dmr_gene_all,
-  file = paste0(report_dir, "DMR_gene_all.tsv"),
+  file = paste0(config$report_dir, "DMR_gene_all.tsv"),
   sep = "\t", row.names = FALSE, quote = FALSE, na = ""
 )
 
@@ -550,7 +554,7 @@ write.table(dmr_gene_all,
 dmr_genes <- filtered_genes(dmr_gene_all)
 # 导出到文件
 write.table(dmr_genes,
-  file = paste0(report_dir, "DMR_genes.tsv"),
+  file = paste0(config$report_dir, "DMR_genes.tsv"),
   sep = "\t", row.names = FALSE, quote = FALSE
 )
 
