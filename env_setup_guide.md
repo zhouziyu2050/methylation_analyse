@@ -1,3 +1,26 @@
+# 方法一：直接拉取完整镜像
+
+```
+# 拉取镜像
+docker push zhouziyu2050/methylation:latest
+
+# 创建容器（映射ssh端口、映射基因文件夹、设置资源上限、设置禁止kill）
+docker run -itd \
+  -p 2222:22 \
+  --name methylation \
+  -v ~/methylation:/methylation \
+  --cpus=62 \
+  --memory=120g \
+  --memory-swap=120g \
+  --oom-kill-disable \
+  zhouziyu2050/methylation:latest
+
+# 进入容器
+docker exec -it methylation /bin/bash
+```
+
+# 方法二：基于anaconda3镜像逐步安装
+
 ## docker操作
 ```
 # 镜像拉取
@@ -5,14 +28,14 @@ docker pull docker.anyhub.us.kg/continuumio/anaconda3
 
 # 创建容器（映射ssh端口、映射基因文件夹、设置资源上限、设置禁止kill）
 docker run -itd \
-  -p 22224:22 \
+  -p 2222:22 \
   --name methylation \
   -v ~/methylation:/methylation \
   --cpus=62 \
   --memory=120g \
   --memory-swap=120g \
   --oom-kill-disable \
-  methylation:v1.0
+  anaconda3
 
 
 # 进入容器
