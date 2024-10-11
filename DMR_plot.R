@@ -99,11 +99,10 @@ option_list <- list(
     type = "character", default = NULL,
     help = "cytoband文件路径，不传则不绘制DMR环形分布图（下载地址：https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt）", metavar = "character"
   ),
-  
   make_option(c("-t", "--text_num"),
     type = "integer", default = NULL,
-    help = "在环内显示标签的数量（微调该参数使标签数量刚好铺满整个环）", metavar = "integer"
-  ),
+    help = "在环内显示标签的数量（微调该参数使标签数量刚好铺满整个环），默认值为88", metavar = "integer"
+  )
 )
 # 解析命令行参数
 opt_parser <- OptionParser(option_list = option_list)
