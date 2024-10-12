@@ -53,18 +53,13 @@ docker exec -it methylation /bin/bash
 | `--report_dir <folder>`        | `{input_1所在文件夹}/report`    | 报告输出路径                                               |
 
 注：
-
 - 使用config中的samples参数或samples_file配置文件可以传入多个样本的参数，通过命令行只能传入单个样本的参数。
-
 - 若设置了配置文件`config`，其他所有参数都仅从配置文件读取。推荐使用`config`文件配置参数，后续步骤可以复用。
-
 - 若设置了样本配置文件`samples_file`，所有样本参数都仅从该配置文件读取。
-
 - 为了方便阅读，配置文件中可以使用```//```和```/* */```注释，程序解析时会自动忽略注释内容。
+- 参考基因组文件下载地址：[mm39小鼠基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) , [其他基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/)
 
-参考基因组文件下载地址：[mm39小鼠基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) , [其他基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/)
-
-主要分析步骤：
+其中，主要分析步骤为：
 
 | 步骤 | 程序来源 | 调用程序  | 步骤描述   |
 |------|----------|------------|------------|
