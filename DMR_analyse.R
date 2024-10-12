@@ -70,6 +70,11 @@ option_list <- list(
   make_option(c("-f", "--samples_file"),
     type = "character", default = NULL,
     help = "以tsv/csv/excel文件传入样本参数", metavar = "character"
+  ),
+  make_option(c("-g", "--gtf_file"),
+    type = "character", default = NULL,
+    help = "gtf注释文件路径（下载地址：https://www.gencodegenes.org/）",
+    metavar = "character"
   )
 )
 # 解析命令行参数
@@ -395,18 +400,24 @@ write.table(DMRsummary,
 
 cat("DMR注释...\n")
 
-# gtf文件解压
-# cmd="gzip -dk gencode.vM35.annotation.gtf.gz"
-# system(command)
-# gtf转为bed文件
-# cmd="gtf2bed < gencode.vM35.annotation.gtf > gencode.vM35.annotation.bed"
-# system(command)
+gtf_bed_file <- paste0(config$gtf_file, ".bed")
+# 判断并生成对应的bed文件
+if (!file.exists(gtf_bed_file)) {
+  if (grepl("\\.gz$", config$gtf_file)) {
+    # gz格式，则先解压再使用gtf2bed转为bed格式
+    command <- paste0("zcat ", config$gtf_file, " | gtf2bed > ", gtf_bed_file)
+  } else {
+    # 不是gz格式，则直接使用gtf2bed转为bed格式
+    command <- paste0("gtf2bed < ", config$gtf_file, " > ", gtf_bed_file)
+  }
+  system(command)
+}
 
 # 寻找重叠区域并注释
 command <- paste0(
-  "bedtools intersect -a ", config$output_dir,
-  "/DMRsReplicatesBins.txt -b /methylation/gencode/gencode.vM35.annotation.bed  -wa -wb > ",
-  config$output_dir, "/DMR_gene_association.bed"
+  "bedtools intersect -a ", config$output_dir, "/DMRsReplicatesBins.txt",
+  " -b ", gtf_bed_file,
+  " -wa -wb > ", config$output_dir, "/DMR_gene_association.bed"
 )
 system(command)
 
