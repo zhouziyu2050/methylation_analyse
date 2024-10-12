@@ -25,10 +25,12 @@ dependencies:
   - conda-forge::libxml2 # conda安装clusterprofiler时可能遗漏该包，手动安装
   - conda-forge::r-tidyverse # 数据处理工具集
   - bioconda::bioconductor-biomart # 用于将ensembl gene id转gene_ids
-  - bioconda::bioconductor-txdb.mmusculus.ucsc.mm39.knowngene # 安装注释库
+  # - bioconda::bioconductor-txdb.mmusculus.ucsc.mm39.knowngene # ucsc小鼠基因注释库
+  # - bioconda::bioconductor-txdb.hsapiens.ucsc.hg38.knowngene # ucsc人类基因组注释库
   - bioconda::bioconductor-ggbio # 安装ggbio
   - conda-forge::r-devtools # 安装devtools（装transPlotR）
   - bioconda::bioconductor-org.mm.eg.db # 小鼠基因组注释库
+  - bioconda::bioconductor-org.hs.eg.db # 人类基因组注释库
   - r-circlize==0.4.16 # 绘制Circos图
   - conda-forge::r-optparse # Rscript参数解析
   - r-irkernel  # 安装 IRKernel，用于在jupyter notebook使用R
