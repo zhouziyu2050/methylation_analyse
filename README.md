@@ -112,6 +112,7 @@ docker exec -it methylation /bin/bash
 | `-a`, `--group_a`     | `NULL`                   | DMR的组A名称 (必传)             |
 | `-b`, `--group_b`     | `NULL`                   | DMR的组B名称 (必传)             |
 | `-f`, `--samples_file`| `NULL`                   | 以tsv/csv/excel文件传入样本参数 |
+| `-g`, `--gtf_file`    | `NULL`                   | gtf注释文件路径，支持gtf/gtf.gz格式（必传） |
 
 注：同时使用配置文件和命令行参数时，命令行参数会覆盖配置文件的参数。
 
@@ -128,15 +129,15 @@ docker exec -it methylation /bin/bash
 | `-r`, `--report_dir`   | `{当前文件夹}/report`     | 报告的输出文件夹                                           |
 | `-a`, `--group_a`      | `NULL`                    | DMR的组A名称                                               |
 | `-b`, `--group_b`      | `NULL`                    | DMR的组B名称                                               |
-| `-f`, `--samples_file` | `NULL`                    | 以tsv/csv/excel文件传入样本参数                          |
+| `-f`, `--samples_file` | `NULL`                    | 以tsv/csv/excel文件传入样本参数                            |
 | **DMR和甲基化位置分布图**  |                       |                                                           |
 | `-p`, `--plot_type`    | `NULL`                    | DMR和甲基化位置分布图的绘制形式，可选值为`line/bar/point`，不传则不绘制此图 |
 | `-n`, `--seqname`      | `NULL`                    | 绘制DMR和甲基化位置分布图的染色体名称                     |
 | `-s`, `--start`        | `NULL`                    | 绘制DMR和甲基化位置分布图的起始位置                       |
 | `-e`, `--end`          | `NULL`                    | 绘制DMR和甲基化位置分布图的结束位置                       |
-| `-g`, `--gtf_file`     | `NULL`                    | 绘制DMR和甲基化位置分布图所使用的gtf注释文件路径          |
-| **DMR环形分布图**      |                          |                                                           |
-| `-y`, `--cytoband_path`| `NULL`                    | cytoband文件路径，不传则不绘制DMR环形分布图              |
+| `-g`, `--gtf_file`     | `NULL`                    | 绘制DMR和甲基化位置分布图所使用的gtf注释文件路径，支持gtf/gtf.gz格式 |
+| **DMR环形分布图**      |                           |                                                          |
+| `-y`, `--cytoband_path`| `NULL`                    | cytoband文件路径，不传则不绘制DMR环形分布图               |
 | `-t`, `--text_num`     | `88`                      | 在环内显示标签的数量（微调该参数使标签数量刚好铺满整个环） |
 
 注：
