@@ -186,9 +186,6 @@ seqnames <- c(
   "NC_000087.8", "NC_005089.1"
 )
 
-# seqnames的类型（accession或chromosome，如果设置为accession会在生成dmr报告时自动转换为chromosome）
-seqnames_type <- "accession"
-
 # accession和chromosome的映射关系
 accession2chromosome <- c(
   "NC_000067.7" = "chr1", "NC_000068.8" = "chr2", "NC_000069.7" = "chr3",
@@ -372,9 +369,7 @@ names(DMRsReplicatesBinsList) <- NULL
 # 使用 c() 函数将多个 GRanges 对象拼接成一个，并转为frame
 DMRsReplicatesBinsCombined <- as.data.frame(do.call(c, DMRsReplicatesBinsList))
 # 将accession转为chromosome
-if (seqnames_type == "accession") {
-  DMRsReplicatesBinsCombined$seqnames <- accession2chromosome[DMRsReplicatesBinsCombined$seqnames]
-}
+DMRsReplicatesBinsCombined$seqnames <- accession2chromosome[DMRsReplicatesBinsCombined$seqnames]
 # 将 DMRs 导出为文本文件
 # 为了方便寻找重叠区域未输出表头，其表头为[seqnames start end width strand sumReadsM1 sumReadsN1 proportion1 sumReadsM2 sumReadsN2 proportion2 cytosinesCount context direction pValue regionType]
 write.table(DMRsReplicatesBinsCombined, file = paste0(config$output_dir, "/DMRsReplicatesBins.txt"), sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
