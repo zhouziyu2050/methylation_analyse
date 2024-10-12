@@ -68,9 +68,9 @@ docker exec -it methylation /bin/bash
 | 3        | bismark  | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 执行序列比对|
 | 4        | bismark  | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 去除重复片段|
 | 5        | bismark  | [bismark_methylation_extractor](https://felixkrueger.github.io/Bismark/options/methylation_extraction/) | 提取甲基化信息|
-| 6        | C语言脚本 | [methylation_depth_analysis](utils/methylation_depth_analysis) | 输出甲基化测序深度信息|
-| 7        | C语言脚本 | [methylation_coverage_analyse](utils/methylation_coverage_analyse) | 输出基于染色体和context的甲基化覆盖度信息|
-| 8        | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis) | 输出基于染色体和context的甲基化分布信息|
+| 6        | C语言脚本 | [methylation_depth_analysis](utils/methylation_depth_analysis.c) | 输出甲基化测序深度信息|
+| 7        | C语言脚本 | [methylation_coverage_analyse](utils/methylation_coverage_analyse.c) | 输出基于染色体和context的甲基化覆盖度信息|
+| 8        | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis.c) | 输出基于染色体和context的甲基化分布信息|
 
 
 **1.2 质控报告生成程序**（Python）：[qc_report.ipynb](qc_report.ipynb)
