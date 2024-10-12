@@ -42,8 +42,8 @@ docker exec -it methylation /bin/bash
 | `--skip_filter`                | `false`                           | 添加该参数以跳过数据清洗步骤                            |
 | `--parallel_num <num>`         | `30`                              | 最大使用线程数                                          |
 | `--parallel_alignment <num>`   | `6`                               | 对齐比对的线程数，线程过多容易内存溢出                  |
-| **样本参数**                   |                                   | 可从命令行中输入单个样本的参数                          |
 | `--samples_file <file>`        | `NULL`                            | 样本配置文件路径（从配置文件读取样本参数，支持csv/tsv/excel格式，示例文件：[config_samples.tsv](config_samples.tsv)） |
+| **样本参数**                   |                                   | 可从命令行中输入单个样本的参数                          |
 | `--sample_name <name>`         | `NULL`                            | 样本名（必传）                                          |
 | `--group_name <name>`          | `NULL`                            | 样本所属分组（必传）                                    |
 | `--input_1 <path>`             | `{sample_name}/{sample_name}_1.fq.gz` | 测序文件1的路径                                     |
@@ -54,13 +54,13 @@ docker exec -it methylation /bin/bash
 
 注：
 
-1 使用config或samples_file配置文件可以传入多个样本的参数，通过命令行只能传入单个样本的参数。
+- 使用config中的samples参数或samples_file配置文件可以传入多个样本的参数，通过命令行只能传入单个样本的参数。
 
-2 若设置了配置文件`config`，其他所有参数都仅从配置文件读取。
+- 若设置了配置文件`config`，其他所有参数都仅从配置文件读取。推荐使用`config`文件配置参数，后续步骤可以复用。
 
-3 若设置了样本配置文件`samples_file`，所有样本参数都仅从该配置文件读取。
+- 若设置了样本配置文件`samples_file`，所有样本参数都仅从该配置文件读取。
 
-4 为了方便阅读，配置文件中可以使用```//```和```/* */```注释，程序解析时会自动忽略注释内容。
+- 为了方便阅读，配置文件中可以使用```//```和```/* */```注释，程序解析时会自动忽略注释内容。
 
 参考基因组文件下载地址：[mm39小鼠基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) , [其他基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/)
 
@@ -114,7 +114,10 @@ docker exec -it methylation /bin/bash
 | `-f`, `--samples_file`| `NULL`                   | 以tsv/csv/excel文件传入样本参数 |
 | `-g`, `--gtf_file`    | `NULL`                   | gtf注释文件路径，支持gtf/gtf.gz格式（必传） |
 
-注：同时使用配置文件和命令行参数时，命令行参数会覆盖配置文件的参数。
+注：
+- 同时使用配置文件和命令行参数时，命令行参数会覆盖配置文件的参数。
+- `config`及`samples_file`参数，推荐复用第1步中的文件。
+- gtf注释文件下载地址：[https://www.gencodegenes.org/](https://www.gencodegenes.org/)
 
 **2.2 DMR绘图程序**：[DMR_plot.R](DMR_plot.R)
 
@@ -142,6 +145,7 @@ docker exec -it methylation /bin/bash
 
 注：
 - 同时使用配置文件和命令行参数时，命令行参数会覆盖配置文件的参数。
+- `config`及`samples_file`参数，推荐复用第1步中的文件。
 - gtf注释文件下载地址：[https://www.gencodegenes.org/](https://www.gencodegenes.org/)
 - cytoband文件下载地址：[https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt](https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt)
 
