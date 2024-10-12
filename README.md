@@ -36,7 +36,7 @@ docker exec -it methylation /bin/bash
 |--------------------------------|-----------------------------------|-------------------------------------------------------|
 | `-h`, `--help`                 |                                   | 显示帮助信息                                           |
 | **全局参数**                   |                                   |                                                        |
-| `--config <file>`              | `NULL`                            | 配置文件路径（从配置文件读取所有参数，json格式，示例文件：[config.json](config.json)）    |
+| `c`, `--config <file>`              | `NULL`                            | 配置文件路径（从配置文件读取所有参数，json格式，示例文件：[config.json](config.json)）    |
 | `--genome_folder <folder>`     | `NULL`                            | 参考基因组文件所在文件夹的路径（必传）                  |
 | `--utils_folder <folder>`      | `{当前文件夹}`                    | utils文件夹的路径，默认值为当前文件夹                   |
 | `--skip_filter`                | `false`                           | 添加该参数以跳过数据清洗步骤                            |
