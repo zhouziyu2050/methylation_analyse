@@ -7,6 +7,7 @@ library(optparse)
 
 # 定义命令行参数的规格
 option_list <- list(
+  make_option(c("--species", "-s"), metavar = "<string>", type = "character", default = "mouse", help = "物种，可选值为human/mouse，默认值为mouse"),
   make_option(c("--genes", "-g"), metavar = "<file>", type = "character", default = NULL, help = "DMR输出的基因文件路径，可以使用相对路径或绝对路径"),
   make_option(c("--report_dir", "-r"), metavar = "<folder>", type = "character", default = NULL, help = "输出报告的文件夹路径，可选，默认值为genes所在文件夹"),
   make_option(c("--pathways_selected", "-p"), metavar = "<string>", type = "character", default = NULL, help = "指定通路，如'GO:0007015,GO:0007264'，多个通路以英文逗号连接")
@@ -25,7 +26,8 @@ if (is.null(options$genes)) {
 # 提取参数值
 DMR_File <- options$genes
 report_dir <- options$report_dir
-
+species <- options$species
+cat("当前所选物种：", species, "\n")
 # 检查文件是否存在
 if (file.exists(DMR_File)) {
   # 输出文件存在信息
@@ -44,7 +46,7 @@ if (!is.null(options$report_dir)) {
 }
 cat("输出报告文件夹路径：", report_dir, "\n")
 
-# 如果提供了 --pathways_selected 参数，则设置该变量
+# 如果提供了 --pathways_selected 参数，则将其格式化为向量
 if (!is.null(options$pathways_selected)) {
   pathways_selected <- options$pathways_selected
   pathways_selected <- gsub(" ", "", pathways_selected)
@@ -57,17 +59,22 @@ if (!is.null(options$pathways_selected)) {
 # 加载包
 ############################################
 
-# library(tidyverse)
-# library(clusterProfiler)
-# library(org.Mm.eg.db)
-# library(biomaRt)
-
 # 静默加载依赖包，避免显示过多提示
 cat("依赖包加载中...", "\n")
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(clusterProfiler))
-suppressPackageStartupMessages(library(org.Mm.eg.db))
 suppressPackageStartupMessages(library(biomaRt))
+if (species == "mouse") {
+  suppressPackageStartupMessages(library(org.Mm.eg.db))
+  dataset <- "mmusculus_gene_ensembl"
+  organism <- "mmu"
+  OrgDb <- org.Mm.eg.db
+} else if (species == "human") {
+  suppressPackageStartupMessages(library(org.Hs.eg.db))
+  dataset <- "hsapiens_gene_ensembl"
+  organism <- "hsa"
+  OrgDb <- org.Hs.eg.db
+}
 cat("依赖包加载完成", "\n")
 
 
@@ -97,7 +104,7 @@ for (region_type in region_types) {
   ego <- enrichGO(
     gene          = gene_ids, # 输入基因列表
     keyType       = "ENSEMBL", # 指定基因ID类型为 Ensembl 基因 ID
-    OrgDb         = org.Mm.eg.db, # 使用小鼠基因数据库
+    OrgDb         = OrgDb, # 使用小鼠基因数据库
     ont           = "ALL", # 指定 GO 类别：CC（细胞组分）、BP（生物过程）、MF（分子功能）
     pAdjustMethod = "BH", # 多重假设检验校正方法，使用 Benjamini-Hochberg 方法
     pvalueCutoff  = 0.01, # p 值阈值
@@ -174,7 +181,7 @@ for (region_type in region_types) {
 
   # 从 Ensembl Gene ID 转换到 Entrez Gene ID
   # mmusculus_gene_ensembl 小鼠数据集,hsapiens_gene_ensembl 人类数据集
-  ensembl <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+  ensembl <- useMart("ensembl", dataset = dataset)
   ensembl_gene <- getBM(
     attributes = c("ensembl_gene_id", "entrezgene_id"),
     filters = "ensembl_gene_id",
@@ -187,12 +194,12 @@ for (region_type in region_types) {
   cat("KEGG分析(该步骤需要联网获取数据)...", "\n")
   ekg <- enrichKEGG(
     gene = entrezgene_ids, # 输入的差异表达基因。
-    keyType = "kegg", # one of "kegg", 'ncbi-geneid', 'ncbi-proteinid', 'uniprot'
-    organism = "mmu", # 物种标识符，hsa:人类; mmu:小鼠
+    keyType = "kegg", # 可选值：kegg, ncbi-geneid, ncbi-proteinid, uniprot
+    organism = organism, # 物种标识符，hsa:人类; mmu:小鼠
     pvalueCutoff = 0.05 # p 值的阈值，用于筛选富集的 KEGG 路径。
   )
   # 将 ekg 结果设置为可读格式
-  ekg <- setReadable(ekg, OrgDb = org.Mm.eg.db, keyType = "ENTREZID")
+  ekg <- setReadable(ekg, OrgDb = OrgDb, keyType = "ENTREZID")
 
   # 导出结果为 TSV 文件
   write.table(
