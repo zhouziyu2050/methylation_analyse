@@ -19,11 +19,11 @@
     "group_a":"Treatment", // DMR的组A名称
     "group_b":"Wild", // DMR的组B名称
 
-    // 绘制DMR甲基化位置分布图参数
-    "plot_type":"line", // 甲基化率的绘制形式，可选值为line/bar/point，不传则不绘制甲基化位置分布图
-    "seqname":"NC_000085.7", // 绘制甲基化位置分布图的染色体名称
-    "start":3765000, // 绘制甲基化位置分布图的起始位置
-    "end":3770000, // 绘制甲基化位置分布图的结束位置
+    // 绘制DMR和甲基化位置分布图参数
+    "plot_type":"line", // 甲基化率的绘制形式，可选值为line/bar/point，不传则不绘制此图
+    "seqname":"NC_000085.7", // 绘制DMR和甲基化位置分布图的染色体名称
+    "start":3765000, // 绘制DMR和甲基化位置分布图的起始位置
+    "end":3770000, // 绘制DMR和甲基化位置分布图的结束位置
     "gtf_file":"/methylation/gencode/mm39/gencode.vM35.annotation.gtf.gz", //gtf注释文件路径（下载地址：https://www.gencodegenes.org/）
     
     // 绘制DMR环形分布图参数
