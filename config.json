@@ -4,13 +4,33 @@
 * samples可以通过json数组或指定tsv文件传入多个样本
 ***************************/
 {
+    // 公共参数
+    "report_dir": "./report/", // 全局报告输出文件夹（不宜放在样本文件夹中的报告），默认值为：{当前文件夹/report}
+    "output_dir": "./output", // 全局中间文件输出文件夹（不宜放在样本文件夹中的中间文件），默认值为：{当前文件夹/output}
+
+    // 甲基化分析参数
     "genome_folder": "/methylation/genome/mm39", // 参考基因组文件所在文件夹的路径（必传）
     "utils_folder": "/methylation", // utils文件夹的路径，默认值为当前文件夹
     "skip_filter": false, // 是否跳过清洗数据，默认值为false
     "parallel_num": 30, // 最大使用线程数，默认值为30
     "parallel_alignment": 6, // 对齐比对的线程数，线程过多容易内存溢出，默认值为6
-    "report_dir": "./report/", // 全局报告输出文件夹（不宜放在样本文件夹中的报告），默认值为：{当前文件夹/report}
-    "output_dir": "./output", // 全局中间文件输出文件夹（不宜放在样本文件夹中的中间文件），默认值为：{当前文件夹/output}
+
+    // DMR分析及绘图参数
+    "group_a":"Treatment", // DMR的组A名称
+    "group_b":"Wild", // DMR的组B名称
+
+    // 绘制DMR甲基化位置分布图参数
+    "plot_type":"line", // 甲基化率的绘制形式，可选值为line/bar/point，不传则不绘制甲基化位置分布图
+    "seqname":"NC_000085.7", // 绘制甲基化位置分布图的染色体名称
+    "start":3765000, // 绘制甲基化位置分布图的起始位置
+    "end":3770000, // 绘制甲基化位置分布图的结束位置
+    "gtf_file":"/methylation/gencode/mm39/gencode.vM35.annotation.gtf.gz", //gtf注释文件路径（下载地址：https://www.gencodegenes.org/）
+    
+    // 绘制DMR环形分布图参数
+    "cytoband_path":"/methylation/cytoband/mm39/cytoBandIdeo.txt", // cytoband文件路径，不传则不绘制DMR环形图（下载地址：https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt）
+    "text_num":88, // 在环内显示标签的数量（微调该参数使标签数量刚好铺满整个环），默认值:88
+
+    // 样本参数
     // "samples_file": "config_samples.tsv", // 以tsv/csv/excel文件传入样本参数，优先级大于samples参数
     "samples": [ // 以json数组形式传入样本参数
         {
