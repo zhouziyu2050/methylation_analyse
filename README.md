@@ -177,10 +177,11 @@ report 报告文件夹
 │   └── The proportion of every type mC.jpg                    # 不同context的占比图
 │
 ├── 组间对照文件夹
-│   ├── circos_plot.png                                        # DMR区域及相关基因在染色体上的分布环形图
 │   ├── DMR_gene_all.tsv                                       # DMR分析的结果及完整的基因注释
 │   ├── DMR_genes.tsv                                          # 仅保留基因的关键字段并去重
 │   ├── DMR_summary.tsv                                        # 不同染色体上的DMR数量统计
+│   ├── Circos plot of DMR.png                                 # DMR环形分布图
+│   ├── Position of DMR and methylation.png                    # DMR和甲基化位置分布图
 │   └── GO/KEGG富集-{all/gain/loss}.{png/tsv}                  # GO/KEGG富集分析结果
 │
 ├── Coverage Rate Group By Chromosome.tsv                      # 每条染色体上的甲基化区域覆盖度
