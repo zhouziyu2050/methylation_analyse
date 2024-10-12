@@ -72,7 +72,7 @@ option_list <- list(
     help = "以tsv/csv/excel文件传入样本参数", metavar = "character"
   ),
 
-  # 绘制DMR甲基化位置分布图相关参数
+  # 绘制DMR和甲基化位置分布图相关参数
   make_option(c("-p", "--plot_type"),
     type = "character", default = NULL,
     help = "DMR和甲基化位置分布图的绘制形式，可选值为line/bar/point，不传则不绘制此图", metavar = "character"
@@ -225,9 +225,6 @@ seqnames <- c(
   "NC_000082.7", "NC_000083.7", "NC_000084.7", "NC_000085.7", "NC_000086.8",
   "NC_000087.8", "NC_005089.1"
 )
-
-# seqnames的类型（accession或chromosome，如果设置为accession会在生成dmr报告时自动转换为chromosome）
-seqnames_type <- "accession"
 
 # accession和chromosome的映射关系
 accession2chromosome <- c(
@@ -521,7 +518,7 @@ if (!is.null(config$cytoband_path)) {
   # 设置画布大小
   # options(repr.plot.width = 8, repr.plot.height = 8)
   # 设置输出文件名和尺寸
-  png(paste0(config$report_dir, "/circos plot of DMR.png"), width = 2000, height = 2000, pointsize = 50)
+  png(paste0(config$report_dir, "/Circos plot of DMR.png"), width = 2000, height = 2000, pointsize = 50)
 
   circos.par(track.margin = c(0.00, 0.01)) # 调整上边距和下边距（单位是相对半径）
 
