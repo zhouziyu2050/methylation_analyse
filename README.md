@@ -171,14 +171,14 @@ docker exec -it methylation /bin/bash
 | `-e`, `--end`          | `NULL`                    | 绘制DMR和甲基化位置分布图的结束位置                       |
 | `-g`, `--gtf_file`     | `NULL`                    | 绘制DMR和甲基化位置分布图所使用的gtf注释文件路径，支持gtf/gtf.gz格式 |
 | **DMR环形分布图**      |                           |                                                          |
-| `-y`, `--cytoband_path`| `NULL`                    | cytoband文件路径，不传则不绘制DMR环形分布图               |
+| `-y`, `--cytoband_path`| `NULL`                    | cytoband文件路径，不传则不绘制DMR环形分布图 |
 | `-t`, `--text_num`     | `88`                      | 在环内显示标签的数量（微调该参数使标签数量刚好铺满整个环） |
 
 注：
 - config文件和命令行同时传入某参数时，命令行的参数优先级更高。
 - `config`及`samples_file`参数，推荐复用第1步中的文件。
 - gtf注释文件下载地址：[https://www.gencodegenes.org/](https://www.gencodegenes.org/)
-- cytoband文件下载地址：[https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt](https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt)
+- cytoband文件下载地址：[https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt](https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt)，应注意不同物种的cytoband文件也不同
 
 ## 3. GO & KEGG分析
 
