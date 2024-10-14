@@ -22,6 +22,17 @@ docker run -itd \
 docker exec -it methylation /bin/bash
 ```
 
+为避免运行时程序将服务器资源耗尽卡死，创建容器时应结合实际情况修改以下参数：
+- `--cpus`：最大CPU占用核数，推荐空闲2个CPU核心
+- `--memory`：最大内存占用数，`bismark_alignment`步骤多线程运行时，极易跑满内存导致服务器死机，务必留出充足的内存保证宿主机可正常运行。
+- `--memory-swap`：物理内存+虚拟内存的最大值，推荐和`memory`参数保持一致，避免使用虚拟内存。虚拟内存是将硬盘当做内存使用的一种技术，由于服务器硬盘读写速度非常慢，可能会导致程序假死。
+- `--oom-kill-disable`：禁用自动杀死线程。可以避免在容器资源跑满时自动杀死程序造成不可预料的错误，此时可以在宿主机中执行相关命令手动kill程序。
+
+其他参数描述：
+- `-p`：将容器的22端口映射到宿主机的2222端口，用于远程ssh连接到容器（仅在需要ssh连接时使用，非必要参数）。
+- `--name`：设置容器的名称为`methylation`，便于使用。若不设置该参数则分配一个随机的容器名称。
+- `-v`：将宿主机的`~/methylation`路径映射到容器的`methylation`路径。其中，宿主机的路径根据数据所在文件夹修改，容器路径不推荐修改。
+
 环境搭建完整步骤查看：[env_setup_guide.md](env_setup_guide.md)
 
 # 关键步骤
@@ -41,7 +52,7 @@ docker exec -it methylation /bin/bash
 | `--utils_folder <folder>`      | `{当前文件夹}`                    | utils文件夹的路径，默认值为当前文件夹                   |
 | `--skip_filter`                | `false`                           | 添加该参数以跳过数据清洗步骤                            |
 | `--parallel_num <num>`         | `30`                              | 最大使用线程数                                          |
-| `--parallel_alignment <num>`   | `6`                               | 对齐比对的线程数，线程过多容易内存溢出                  |
+| `--parallel_alignment <num>`   | `4`                               | 基因比对的线程数，线程过多容易内存溢出                  |
 | `--samples_file <file>`        | `NULL`                            | 样本配置文件路径（从配置文件读取样本参数，支持csv/tsv/excel格式，示例文件：[config_samples.tsv](config_samples.tsv)） |
 | **样本参数**                   |                                   | 可从命令行中输入单个样本的参数                          |
 | `--sample_name <name>`         | `NULL`                            | 样本名（必传）                                          |
@@ -57,6 +68,7 @@ docker exec -it methylation /bin/bash
 - 若设置了配置文件`config`，其他所有参数都仅从配置文件读取，命令行的其他参数均被忽略。推荐使用`config`文件配置参数，后续步骤可以复用。
 - 若设置了样本配置文件`samples_file`，所有样本参数都仅从该配置文件读取，命令行中的样本参数将被忽略。
 - 为了方便阅读，配置文件中可以使用```//```和```/* */```注释，程序解析时会自动忽略注释内容。
+- `parallel_alignment`参数设置多线程比对会消耗大量内存，如果内存达到上限可能会造成
 - 参考基因组文件下载地址：[mm39小鼠基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) , [其他基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/)
 
 其中，主要分析步骤为：
