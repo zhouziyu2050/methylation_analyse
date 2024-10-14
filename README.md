@@ -73,7 +73,7 @@ docker exec -it methylation /bin/bash
 | 8        | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis.c) | 输出基于染色体和context的甲基化分布信息|
 
 
-**1.2 质控报告生成程序**（Python）：[qc_report.ipynb](qc_report.ipynb)
+**1.2 质控报告生成程序**（Python）：[qc_report.py](qc_report.py)
 
 参数描述：
 
