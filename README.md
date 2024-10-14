@@ -39,8 +39,12 @@ docker exec -it methylation /bin/bash
 
 ## 1. 甲基化分析及质控
 
-**1.1 甲基化分析程序**（耗时长）：[methylation_analyse.py](methylation_analyse.py)
+### 1.1 甲基化分析程序（耗时最长）：[methylation_analyse.py](methylation_analyse.py)
 
+使用示例：
+- 示例1（传入config文件批量分析单个或多个样本）：`python methylation_analyse.py -c config.json`
+- 示例2（传入命令行分析单个样本）：`python methylation_analyse.py --genome_folder /methylation/genome/mm39 --skip_filter --parallel_num 30 --parallel_alignment 4 --sample_name 13A --group_name Treatment --input_1 13A/13A_1.fq.gz --input_2 13A/13A_2.fq.gz --report_dir ./report/13A`
+- 
 参数描述：
 
 | 参数                           | 默认值                           | 描述                                                   |
@@ -61,31 +65,35 @@ docker exec -it methylation /bin/bash
 | `--input_2 <path>`             | `{sample_name}/{sample_name}_2.fq.gz` | 测序文件2的路径                                     |
 | `--output_dir <folder>`        | `{input_1所在文件夹}/output`    | 输出的中间文件存放路径                                     |
 | `--log_dir <folder>`           | `{input_1所在文件夹}/log`       | 日志文件夹                                                 |
-| `--report_dir <folder>`        | `{input_1所在文件夹}/report`    | 报告输出路径                                               |
+| `--report_dir <folder>`        | `{input_1所在文件夹}/report`    | 报告输出路径，可以通过该参数将多个样本的报告合并一个文件夹中方便查看，如：`./report/13A` |
 
 注：
 - 使用config中的samples参数或samples_file配置文件可以传入多个样本的参数，通过命令行只能传入单个样本的参数。
 - 若设置了配置文件`config`，其他所有参数都仅从配置文件读取，命令行的其他参数均被忽略。推荐使用`config`文件配置参数，后续步骤可以复用。
 - 若设置了样本配置文件`samples_file`，所有样本参数都仅从该配置文件读取，命令行中的样本参数将被忽略。
 - 为了方便阅读，配置文件中可以使用```//```和```/* */```注释，程序解析时会自动忽略注释内容。
-- `parallel_alignment`参数设置多线程比对会消耗大量内存，如果内存达到上限可能会造成
+- `parallel_alignment`参数设置多线程比对会消耗大量内存（约8~16GB/线程，与数据量有关），如果内存达到上限可能会造成容器卡死或服务器卡死。为避免服务器卡死，在创建docker镜像时应结合实际情况限制容器最大资源开销。若容器卡死，可以通过宿主机查找占用内存最大的进程并kill，或直接将整个容器kill。
 - 参考基因组文件下载地址：[mm39小鼠基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001635.27/) , [其他基因组](https://www.ncbi.nlm.nih.gov/datasets/genome/)
 
-其中，主要分析步骤为：
+该程序中的主要分析步骤为：
 
-| 步骤 | 程序来源 | 调用程序  | 步骤描述   |
-|------|----------|------------|------------|
-| 1        | bismark  | [bismark_genome_preparation](https://felixkrueger.github.io/Bismark/options/genome_preparation/) | 创建参考基因组的索引文件（检测到文件已存在则自动跳过）|
-| 2        | SOAPnuke | [soapnuke_filter](https://github.com/BGI-flexlab/SOAPnuke) | 进行数据过滤|
-| 3        | bismark  | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 执行序列比对|
-| 4        | bismark  | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 去除重复片段|
-| 5        | bismark  | [bismark_methylation_extractor](https://felixkrueger.github.io/Bismark/options/methylation_extraction/) | 提取甲基化信息|
-| 6        | C语言脚本 | [methylation_depth_analysis](utils/methylation_depth_analysis.c) | 输出甲基化测序深度信息|
-| 7        | C语言脚本 | [methylation_coverage_analyse](utils/methylation_coverage_analyse.c) | 输出基于染色体和context的甲基化覆盖度信息|
-| 8        | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis.c) | 输出基于染色体和context的甲基化分布信息|
+| 步骤 | 程序来源 | 调用程序  | 预估耗时        | 步骤描述   |
+|------|----------|------------|------------------|------------|
+| 1    | bismark  | [bismark_genome_preparation](https://felixkrueger.github.io/Bismark/options/genome_preparation/) | 约30分钟         | 创建参考基因组的索引文件，若检测到索引文件夹`Bisulfite_Genome`存在则自动跳过此步骤，如需重新构建索引请务必完整删除该文件夹以避免误判 |
+| 2    | SOAPnuke | [soapnuke_filter](https://github.com/BGI-flexlab/SOAPnuke) | 约1小时/样本    | 进行数据过滤，若数据源本身是清洁数据可以添加`--skip_filter`参数跳过此步骤 |
+| 3    | bismark  | [bismark_alignment](https://felixkrueger.github.io/Bismark/options/alignment/) | 约20小时/样本    | 执行序列比对 |
+| 4    | bismark  | [bismark_deduplicate](https://felixkrueger.github.io/Bismark/options/deduplication/) | 约3小时/样本     | 去除重复片段 |
+| 5    | bismark  | [bismark_methylation_extractor](https://felixkrueger.github.io/Bismark/options/methylation_extraction/) | 约24小时/样本    | 提取甲基化信息 |
+| 6    | C语言脚本 | [methylation_depth_analysis](utils/methylation_depth_analysis.c) | 约10分钟/样本    | 输出甲基化测序深度信息 |
+| 7    | C语言脚本 | [methylation_coverage_analyse](utils/methylation_coverage_analyse.c) | 约10分钟/样本    | 输出基于染色体和context的甲基化覆盖度信息 |
+| 8    | C语言脚本 | [methylation_distribution_analysis](utils/methylation_distribution_analysis.c) | 约10分钟/样本    | 输出基于染色体和context的甲基化分布信息 |
+
+其中，预估耗时为使用[config.json](config.json)文件中的参数运行所得。
 
 
-**1.2 质控报告生成程序**（Python）：[qc_report.py](qc_report.py)
+### 1.2 质控报告生成程序：[qc_report.py](qc_report.py)
+
+使用示例：`python qc_report.py -c config.json`
 
 参数描述：
 
@@ -117,7 +125,9 @@ docker exec -it methylation /bin/bash
 
 ## 2. DMR分析及绘图
 
-**2.1 DMR分析程序**（耗时长）：[DMR_analyse.R](DMR_analyse.R)
+### 2.1 DMR分析程序（耗时长）：[DMR_analyse.R](DMR_analyse.R)
+
+使用示例：`Rscript DMR_analyse.R -c config.json -a Treatment -b Control`
 
 参数描述：
 
@@ -133,13 +143,16 @@ docker exec -it methylation /bin/bash
 | `-g`, `--gtf_file`    | `NULL`                   | gtf注释文件路径，支持gtf/gtf.gz格式（必传） |
 
 注：
-- 同时使用配置文件和命令行参数时，命令行参数会覆盖配置文件的参数。
+- 该程序每次运行可以传入2个样本组，耗时**约12小时**，请耐心等待。
+- config文件和命令行同时传入某参数时，命令行的参数优先级更高。为避免频繁修改配置文件，可以直接使用命令行参数覆盖配置参数。
 - `config`及`samples_file`参数，推荐复用第1步中的文件。
 - gtf注释文件下载地址：[https://www.gencodegenes.org/](https://www.gencodegenes.org/)
 
-**2.2 DMR绘图程序**：[DMR_plot.R](DMR_plot.R)
+### 2.2 DMR绘图程序：[DMR_plot.R](DMR_plot.R)
 
-参数描述
+使用示例：`Rscript DMR_plot.R -c config.json -a Treatment -b Control --plot_type line --seqname chrY -s 3765000 -e 3770000 -t 88`
+
+参数描述：
 
 | 参数名                 | 默认值                   | 描述                                                       |
 |------------------------|---------------------------|------------------------------------------------------------|
@@ -162,24 +175,30 @@ docker exec -it methylation /bin/bash
 | `-t`, `--text_num`     | `88`                      | 在环内显示标签的数量（微调该参数使标签数量刚好铺满整个环） |
 
 注：
-- 同时使用配置文件和命令行参数时，命令行参数会覆盖配置文件的参数。
+- config文件和命令行同时传入某参数时，命令行的参数优先级更高。
 - `config`及`samples_file`参数，推荐复用第1步中的文件。
 - gtf注释文件下载地址：[https://www.gencodegenes.org/](https://www.gencodegenes.org/)
 - cytoband文件下载地址：[https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt](https://hgdownload.cse.ucsc.edu/goldenPath/mm39/database/cytoBandIdeo.txt)
 
 ## 3. GO & KEGG分析
 
-GO & KEGG分析程序：[GO_and_KEGG_analyse.R](GO_and_KEGG_analyse.R)
+### GO & KEGG分析程序：[GO_and_KEGG_analyse.R](GO_and_KEGG_analyse.R)
+
+使用示例：`Rscript GO_and_KEGG_analyse.R -s mouse -g ./report/Treatment_and_Wild/DMR_genes.tsv -p GO:0007015,GO:0007264,GO:1902903,GO:0032970`
 
 参数描述：
 
 | 参数                        | 默认值               | 描述                                          |
 |-----------------------------|---------------------|------------------------------------------------|
-| `-s`, `--species`           | `mouse`             | 物种，可选值为human/mouse                         |
 | `-h`, `--help`              |                     | 显示帮助信息                                   |
+| `-s`, `--species`           | `mouse`             | 物种，可选值为human/mouse                         |
 | `-g`, `--genes`             | `NULL`              | DMR输出的基因文件路径，可以使用相对路径或绝对路径（必传） |
 | `-r`, `--report_dir`        | `{genes所在文件夹}`  | 输出报告的文件夹路径，可选             |
-| `-p`, `--pathways_selected` | `NULL`              | 指定通路，多个通路以英文逗号连接，如 'GO:0007015,GO:0007264'，可选 |
+| `-p`, `--pathways_selected` | `NULL`              | 指定通路，多个通路以英文逗号连接，应注意参数中不要有空格，如'GO:0007015,GO:0007264'，可选 |
+
+注：
+- 该程序没有config参数，不能使用config文件。
+- genes文件由`DMR_analyse.R`生成，一般路径为：`{报告文件夹}/{组A名称}_{组B名称}/DMR_genes.tsv`
 
 # report输出结构
 ```
