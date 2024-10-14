@@ -219,24 +219,29 @@ cat("样本分组:", paste(samples$group_name, collapse = ", "), "\n")
 
 # 需要处理的染色体名称
 seqnames <- c(
-  "NC_000067.7", "NC_000068.8", "NC_000069.7", "NC_000070.7", "NC_000071.7",
-  "NC_000072.7", "NC_000073.7", "NC_000074.7", "NC_000075.7", "NC_000076.7",
-  "NC_000077.7", "NC_000078.7", "NC_000079.7", "NC_000080.7", "NC_000081.7",
-  "NC_000082.7", "NC_000083.7", "NC_000084.7", "NC_000085.7", "NC_000086.8",
-  "NC_000087.8", "NC_005089.1"
+  "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9",
+  "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17",
+  "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY"
 )
+# seqnames <- c(
+#   "NC_000067.7", "NC_000068.8", "NC_000069.7", "NC_000070.7", "NC_000071.7",
+#   "NC_000072.7", "NC_000073.7", "NC_000074.7", "NC_000075.7", "NC_000076.7",
+#   "NC_000077.7", "NC_000078.7", "NC_000079.7", "NC_000080.7", "NC_000081.7",
+#   "NC_000082.7", "NC_000083.7", "NC_000084.7", "NC_000085.7", "NC_000086.8",
+#   "NC_000087.8", "NC_005089.1"
+# )
 
-# accession和chromosome的映射关系
-accession2chromosome <- c(
-  "NC_000067.7" = "chr1", "NC_000068.8" = "chr2", "NC_000069.7" = "chr3",
-  "NC_000070.7" = "chr4", "NC_000071.7" = "chr5", "NC_000072.7" = "chr6",
-  "NC_000073.7" = "chr7", "NC_000074.7" = "chr8", "NC_000075.7" = "chr9",
-  "NC_000076.7" = "chr10", "NC_000077.7" = "chr11", "NC_000078.7" = "chr12",
-  "NC_000079.7" = "chr13", "NC_000080.7" = "chr14", "NC_000081.7" = "chr15",
-  "NC_000082.7" = "chr16", "NC_000083.7" = "chr17", "NC_000084.7" = "chr18",
-  "NC_000085.7" = "chr19", "NC_000086.8" = "chrX", "NC_000087.8" = "chrY",
-  "NC_005089.1" = "chrM"
-)
+# # accession和chromosome的映射关系
+# accession2chromosome <- c(
+#   "NC_000067.7" = "chr1", "NC_000068.8" = "chr2", "NC_000069.7" = "chr3",
+#   "NC_000070.7" = "chr4", "NC_000071.7" = "chr5", "NC_000072.7" = "chr6",
+#   "NC_000073.7" = "chr7", "NC_000074.7" = "chr8", "NC_000075.7" = "chr9",
+#   "NC_000076.7" = "chr10", "NC_000077.7" = "chr11", "NC_000078.7" = "chr12",
+#   "NC_000079.7" = "chr13", "NC_000080.7" = "chr14", "NC_000081.7" = "chr15",
+#   "NC_000082.7" = "chr16", "NC_000083.7" = "chr17", "NC_000084.7" = "chr18",
+#   "NC_000085.7" = "chr19", "NC_000086.8" = "chrX", "NC_000087.8" = "chrY",
+#   "NC_005089.1" = "chrM"
+# )
 
 # 给输出文件夹追加分组信息
 config$output_dir <- paste0(
@@ -300,6 +305,15 @@ if (!is.null(config$plot_type)) {
       samples[i, "prefix"], "_bismark_bt2_pe.deduplicated.CX_report.txt.chr",
       config$seqname, ".CX_report.txt.gz"
     )
+    # 检查文件是否存在
+    if (!file.exists(file_path)) {
+      stop(paste0(
+        "样本", samples[i, "sample_name"],
+        ", 染色体", config$seqname,
+        "对应的CX_report文件不存在，请检查！"
+      ))
+    }
+    # 读取甲基化数据
     methylationData <- readBismark(file_path)
     # 过滤指定区域
     methylationDataFiltered <- subsetByOverlaps(methylationData, region)
@@ -341,7 +355,8 @@ if (!is.null(config$plot_type)) {
   # 筛选指定范围和 seqnames 的行
   start_range_val <- config$start
   end_range_val <- config$end
-  specified_seqnames <- accession2chromosome[config$seqname]
+  # specified_seqnames <- accession2chromosome[config$seqname]
+  specified_seqnames <- config$seqname
   filtered_DMRs <- DMRsReplicatesBinsCombined %>%
     filter(start >= start_range_val & end <= end_range_val & seqnames == specified_seqnames)
 
@@ -360,7 +375,8 @@ if (!is.null(config$plot_type)) {
       scale_color_manual(values = color_palette, labels = names(color_palette)) +
       scale_shape_manual(values = seq_along(sample_names), labels = sample_names) +
       labs(
-        x = paste0("Position in ", accession2chromosome[config$seqname], " (bp)"),
+        # x = paste0("Position in ", accession2chromosome[config$seqname], " (bp)"),
+        x = paste0("Position in ", config$seqname, " (bp)"),
         y = "Methylation proportion",
         color = "Group",
         shape = "Sample",
@@ -379,7 +395,8 @@ if (!is.null(config$plot_type)) {
     )) +
       geom_line() +
       labs(
-        x = paste0("Position in ", accession2chromosome[config$seqname], " (bp)"),
+        # x = paste0("Position in ", accession2chromosome[config$seqname], " (bp)"),
+        x = paste0("Position in ", config$seqname, " (bp)"),
         y = "Methylation Proportion",
         fill = "Group"
       ) +
@@ -402,7 +419,8 @@ if (!is.null(config$plot_type)) {
     )) +
       geom_bar(stat = "identity", position = "dodge") + # 使用柱状图
       labs(
-        x = paste0("Position in ", accession2chromosome[config$seqname], " (bp)"),
+        # x = paste0("Position in ", accession2chromosome[config$seqname], " (bp)"),
+        x = paste0("Position in ", config$seqname, " (bp)"),
         y = "Methylation Proportion",
         fill = "Group"
       ) +
@@ -438,7 +456,8 @@ if (!is.null(config$plot_type)) {
   options(repr.plot.width = 12, repr.plot.height = 2)
   plot2 <- trancriptVis(
     gtfFile = as.data.frame(gtf_data), # 将 GTF 数据文件转换为数据框，并用于绘制转录本图
-    Chr = accession2chromosome[config$seqname], # 将染色体的 accession 转换为实际染色体名称
+    # Chr = accession2chromosome[config$seqname], # 将染色体的 accession 转换为实际染色体名称
+    Chr = config$seqname, # 染色体名称
     posStart = config$start, # 可视化区域的起始位置
     posEnd = config$end, # 可视化区域的结束位置
     textLabel = "gene_name", # 标签文字类型，可选 gene_name, transcript_name, transcript_id, gene_id
@@ -452,7 +471,8 @@ if (!is.null(config$plot_type)) {
     exonFill = "#56b4e9", # 设置外显子区域的填充颜色为蓝色
     arrowBreak = 0.5 # 设置箭头的断开位置
   ) +
-    labs(x = paste0("Position in ", accession2chromosome[config$seqname], " (bp)")) +
+    # labs(x = paste0("Position in ", accession2chromosome[config$seqname], " (bp)")) +
+    labs(x = paste0("Position in ", config$seqname, " (bp)")) +
     ylim(0.7, 1.2) +
     scale_x_continuous(
       limits = c(config$start, config$end) # 设置 x 轴的显示范围为 start 和 end 之间
@@ -535,7 +555,7 @@ if (!is.null(config$cytoband_path)) {
   circos.initializeWithIdeogram(
     cytoband = config$cytoband_path,
     plotType = c("labels"),
-    chromosome.index = accession2chromosome,
+    chromosome.index = unique(DMRs$chr),
     labels.cex = 0.6 * par("cex"), # 染色体标签大小
   )
 
