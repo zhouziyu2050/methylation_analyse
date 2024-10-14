@@ -228,6 +228,3 @@ report 报告文件夹
 ├── QC quality control table for each sample (deduplicated).tsv # 去重后的质控数据
 └── QC quality control table for each sample.tsv               # 质控数据
 ```
-
-# 染色体名称对应关系
-参考对照表：[Chromosome_comparison_table.md](Chromosome_comparison_table.md)
