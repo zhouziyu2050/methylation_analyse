@@ -179,25 +179,10 @@ cat("样本分组:", paste(samples$group_name, collapse = ", "), "\n")
 
 # 需要处理的染色体名称
 seqnames <- c(
-  "NC_000067.7", "NC_000068.8", "NC_000069.7", "NC_000070.7", "NC_000071.7",
-  "NC_000072.7", "NC_000073.7", "NC_000074.7", "NC_000075.7", "NC_000076.7",
-  "NC_000077.7", "NC_000078.7", "NC_000079.7", "NC_000080.7", "NC_000081.7",
-  "NC_000082.7", "NC_000083.7", "NC_000084.7", "NC_000085.7", "NC_000086.8",
-  "NC_000087.8", "NC_005089.1"
+  "chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9",
+  "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17",
+  "chr18", "chr19", "chrX", "chrY"
 )
-
-# accession和chromosome的映射关系
-accession2chromosome <- c(
-  "NC_000067.7" = "chr1", "NC_000068.8" = "chr2", "NC_000069.7" = "chr3",
-  "NC_000070.7" = "chr4", "NC_000071.7" = "chr5", "NC_000072.7" = "chr6",
-  "NC_000073.7" = "chr7", "NC_000074.7" = "chr8", "NC_000075.7" = "chr9",
-  "NC_000076.7" = "chr10", "NC_000077.7" = "chr11", "NC_000078.7" = "chr12",
-  "NC_000079.7" = "chr13", "NC_000080.7" = "chr14", "NC_000081.7" = "chr15",
-  "NC_000082.7" = "chr16", "NC_000083.7" = "chr17", "NC_000084.7" = "chr18",
-  "NC_000085.7" = "chr19", "NC_000086.8" = "chrX", "NC_000087.8" = "chrY",
-  "NC_005089.1" = "chrM"
-)
-
 
 # 给输出文件夹追加分组信息
 config$output_dir <- paste0(
@@ -252,6 +237,11 @@ for (seqname in seqnames) {
       samples[i, "prefix"], "_bismark_bt2_pe.deduplicated.CX_report.txt.chr",
       seqname, ".CX_report.txt.gz"
     )
+    # 检查文件是否存在
+    if (!file.exists(file_path)) {
+      cat(paste0(seqname, "对应的CX_report文件不存在，自动跳过"))
+      next # 如果文件不存在，继续下一个循环
+    }
     methylationDataList[[i]] <- readBismark(file_path)
   }
 
@@ -368,8 +358,8 @@ cat("DMR结果合并导出...\n")
 names(DMRsReplicatesBinsList) <- NULL
 # 使用 c() 函数将多个 GRanges 对象拼接成一个，并转为frame
 DMRsReplicatesBinsCombined <- as.data.frame(do.call(c, DMRsReplicatesBinsList))
-# 将accession转为chromosome
-DMRsReplicatesBinsCombined$seqnames <- accession2chromosome[DMRsReplicatesBinsCombined$seqnames]
+# 将accession转为chromosome（NC...转chr...）
+# DMRsReplicatesBinsCombined$seqnames <- accession2chromosome[DMRsReplicatesBinsCombined$seqnames]
 # 将 DMRs 导出为文本文件
 # 为了方便寻找重叠区域未输出表头，其表头为[seqnames start end width strand sumReadsM1 sumReadsN1 proportion1 sumReadsM2 sumReadsN2 proportion2 cytosinesCount context direction pValue regionType]
 write.table(DMRsReplicatesBinsCombined, file = paste0(config$output_dir, "/DMRsReplicatesBins.txt"), sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
