@@ -13,7 +13,7 @@
     "utils_folder": "/methylation", // utils文件夹的路径，默认值为当前文件夹
     "skip_filter": false, // 是否跳过清洗数据，默认值为false
     "parallel_num": 30, // 最大使用线程数，默认值为30
-    "parallel_alignment": 6, // 对齐比对的线程数，线程过多容易内存溢出，默认值为6
+    "parallel_alignment": 6, // 对齐比对的线程数，线程过多容易内存溢出，默认值为4
 
     // DMR分析及绘图参数
     "group_a":"Treatment", // DMR的组A名称
