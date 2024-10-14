@@ -303,7 +303,7 @@ DEFAULTS = {
     "utils_folder": ".",
     "skip_filter": False,
     "parallel_num": 30,
-    "parallel_alignment": 6,
+    "parallel_alignment": 4,
     # 样本的默认参数
     "sample_name": None,
     "group_name": None,
